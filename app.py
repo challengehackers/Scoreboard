@@ -5,7 +5,7 @@ from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
 
 app = Flask(__name__)
-BASEURL = 'https://2017.gryphonctf.com'
+BASEURL = 'https://ctf.firstseclounge.org/api/v1'
 
 @app.route('/')
 def index():
@@ -26,7 +26,7 @@ def getLatest():
     for team in data:
         for solve in team.solves:
             latestSolves.append(solve)
-    latestSolves = list(sorted(latestSolves, key=lambda x: x['time'], reverse=True))[:10]
+    latestSolves = list(sorted(latestSolves, key=lambda x: x['date'], reverse=True))[:10]
     pprint(latestSolves)
     finalData = []
     downloadedTeams = {}
@@ -36,7 +36,7 @@ def getLatest():
                 teamName = teamMap[chall['team']]
                 if chall['team'] not in downloadedTeams:
                     print('[*] Downloading team {} info for chall {}...'.format(chall['team'], chall['chal']))
-                    raw = requests.get('{}/solves/{}'.format(BASEURL, chall['team']), timeout=3)
+                    raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team']), timeout=3)
                     parsed = raw.json()['solves']
                     downloadedTeams[chall['team']] = parsed
                 else:
@@ -61,20 +61,21 @@ def latest():
 class Team():
     def __init__(self, teamPosition, teamDict):
         self.position = int(teamPosition)
-        self.name = teamDict.get('name', '')
-        self.id = teamDict.get('id', '')
-        self.solves = [solve for solve in teamDict.get('solves', []) if solve.get('chal')]
+        self.name = teamDict['name']
+        self.id = teamDict['id']
+        self.solves = [solve for solve in teamDict['solves'] if solve['challenge_id']]
         self.solved = len(self.solves)
-        self.score = sum([chall.get('value', 0) for chall in self.solves])
+        self.score = teamDict['score']
+
 
 def getData():
     data = []
     while True:
         try:
             print('[*] Downloading scoreboard data...')
-            raw = requests.get('{}/top/20'.format(BASEURL), timeout=4)
+            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), timeout=4)
             print('[+] Smexy...')
-            parsed = raw.json()['places']
+            parsed = raw.json()['data']
             for teamPosition, teamDict in parsed.items():
                 t = Team(teamPosition, teamDict)
                 data.append(t)
