@@ -12,12 +12,12 @@ def index():
     return redirect(url_for('scoreboard'))
 
 class Latest():
-    def __init__(self, teamname, challname, challcat, challpoints, epoch):
+    def __init__(self, teamname, challname, challcat, challpoints, date):
         self.teamname = teamname
         self.challname = challname
         self.challcat = challcat
         self.challpoints = challpoints
-        self.time = time.strftime('%H:%M', time.localtime(epoch))
+        self.time = time.strftime('%H:%M', time.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ'))
 
 def getLatest():
     data = getData()
@@ -27,30 +27,34 @@ def getLatest():
         for solve in team.solves:
             latestSolves.append(solve)
     latestSolves = list(sorted(latestSolves, key=lambda x: x['date'], reverse=True))[:10]
-    pprint(latestSolves)
     finalData = []
     downloadedTeams = {}
+
+    # [{'challenge_id': 310, 'account_id': 382, 'team_id': 382, 'user_id': 966, 'value': 100, 'date': '2025-05-26T19:11:16.903453Z'}]
     for chall in latestSolves:
-        while True:
-            try:
-                teamName = teamMap[chall['team']]
-                if chall['team'] not in downloadedTeams:
-                    print('[*] Downloading team {} info for chall {}...'.format(chall['team'], chall['chal']))
-                    raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team']), timeout=3)
-                    parsed = raw.json()['solves']
-                    downloadedTeams[chall['team']] = parsed
-                else:
-                    print('[*] Re-using team {} info for chall {}...'.format(chall['team'], chall['chal']))
-                    parsed = downloadedTeams[chall['team']]
-                challName = [x for x in parsed if x['chalid'] == chall['chal']][0]['chal']
-                challCat = [x for x in parsed if x['chalid'] == chall['chal']][0]['category']
-                l = Latest(teamName, challName, challCat, chall['value'], chall['time'])
-                finalData.append(l)
-                break
-            except Exception as e:
-                print(e)
-                continue
-    print(finalData)
+        try:
+            teamName = teamMap[chall['team_id']]
+            if chall['team_id'] not in downloadedTeams:
+                print('[*] Downloading team {} info for chall {}...'.format(chall['team_id'], chall['challenge_id']))
+                raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team_id']), timeout=3)
+                parsed = raw.json()["data"]
+                downloadedTeams[chall['team_id']] = parsed
+            else:
+                print('[*] Re-using team {} info for chall {}...'.format(chall['team_id'], chall['challenge_id'])) #DEBUG
+                parsed = downloadedTeams[chall['team_id']]
+    
+            # Find the challenge name and category
+            challName = [x for x in parsed if x["challenge_id"] == chall['challenge_id']][0]['challenge']['name']
+            challCat = [x for x in parsed if x["challenge_id"] == chall['challenge_id']][0]['challenge']['category']            
+            teamName = [x for x in parsed if x["team"]['id'] == chall['team_id']][0]["team"]["name"]
+
+            print(f'[*] Found solve for team {teamName} on challenge {challName} in category {challCat} worth {chall["value"]} points at {chall["date"]}') #DEBUG
+
+            l = Latest(teamName, challName, challCat, chall['value'], chall['date'])
+            finalData.append(l)
+        except Exception as e:
+            print(f"FATAL ERROR: {e}")
+            continue
     return finalData
 
 @app.route('/latest')
