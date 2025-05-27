@@ -1,4 +1,4 @@
-# GCTF2017-Scoreboard
+# GCTF2017-Scoreboard updated for FIRSTCON25
 
 ![Final Results Screenshot](screenshots/results.png)
 
