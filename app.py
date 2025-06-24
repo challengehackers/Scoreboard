@@ -36,7 +36,12 @@ def getLatest():
             teamName = teamMap[chall['team_id']]
             if chall['team_id'] not in downloadedTeams:
                 print('[*] Downloading team {} info for chall {}...'.format(chall['team_id'], chall['challenge_id']))
-                raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team_id']), timeout=3)
+
+
+                headers = {
+                    'User-Agent': 'SIG SecLounge Scoreboard',
+                }
+                raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team_id']), headers=headers, timeout=3)
                 parsed = raw.json()["data"]
                 downloadedTeams[chall['team_id']] = parsed
             else:
@@ -77,7 +82,10 @@ def getData():
     while True:
         try:
             print('[*] Downloading scoreboard data...')
-            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), timeout=4)
+            headers = {
+                'User-Agent': 'SIG SecLounge Scoreboard',
+            }
+            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), headers=headers, timeout=4)
             print('[+] Smexy...')
             parsed = raw.json()['data']
             for teamPosition, teamDict in parsed.items():
