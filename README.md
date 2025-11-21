@@ -22,5 +22,5 @@ sudo docker build -t scoreboard .
 
 * Run the container in background
 ````
-sudo docker run -p 8888:8888 -d scoreboard
+sudo docker run -p 8888:80 -d scoreboard
 ````
