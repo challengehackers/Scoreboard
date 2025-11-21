@@ -1,11 +1,13 @@
-# Optixal
+# Initial version: Optixal
+# Forked and updated by FIRST SecLounge SIG
+# Version 2025-11-21 
 
 import requests, time
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
 
 app = Flask(__name__)
-BASEURL = 'https://ctf.firstseclounge.org/api/v1'
+BASEURL = 'https://certeu.firstseclounge.org/api/v1'
 
 @app.route('/')
 def index():
@@ -114,6 +116,9 @@ def results():
 @app.route('/timer')
 def timer():
     return render_template('timer.html')
+
+def create_app():
+    return app
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
