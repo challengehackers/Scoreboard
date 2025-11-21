@@ -12,3 +12,15 @@
 * `pip install -r requirements.txt`
 * `python app.py`
 * Visit "http://localhost:8080"
+
+## Docker setup
+
+* Build the container
+````
+sudo docker build -t scoreboard .
+````
+
+* Run the container in background
+````
+sudo docker run -p 8888:8888 -d scoreboard
+````
