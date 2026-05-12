@@ -7,7 +7,7 @@ from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
 
 app = Flask(__name__)
-BASEURL = 'https://certeu.firstseclounge.org/api/v1'
+BASEURL = 'https://ctf.firstseclounge.org/api/v1'
 
 @app.route('/')
 def index():

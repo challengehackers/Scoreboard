@@ -10,6 +10,10 @@ html, body {
     margin: 0;
 }
 
+html {
+    font-size: clamp(16px, 1.2vw, 32px);
+}
+
 body {
     background-color: #17192a;
     font-family: 'PT Sans', Helvetica, Arial, sans-serif;
@@ -22,11 +26,11 @@ body {
 }
 
 .column {
-    width: 32em;
+    width: 40vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 70em    ;
+    height: 90vh;
 }
 
 .column-header {
@@ -47,7 +51,7 @@ body {
 
 #scoreboard {
     width: 100%;
-    height: 80%;
+    height: 85vh;
     overflow-y: scroll;
 }
 
