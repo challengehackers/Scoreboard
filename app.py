@@ -87,7 +87,7 @@ def getData():
     while True:
         try:
             print('[*] Downloading scoreboard data...')
-            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), headers=get_headers(), timeout=4)
+            raw = requests.get('{}/scoreboard/top/10'.format(BASEURL), headers=get_headers(), timeout=4)
             print('[+] Smexy...')
             parsed = raw.json()['data']
             for teamPosition, teamDict in parsed.items():

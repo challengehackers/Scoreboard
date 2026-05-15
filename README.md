@@ -6,14 +6,14 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 
 ## Features
 
-- Real-time scoreboard with auto-scroll and periodic refresh
+- Real-time scoreboard (top 10 teams) with auto-scroll and periodic refresh
 - Countdown timer to CTF end
 - Score trend graph (top 10 teams over time)
-- Auto-rolling announcements from CTFd notifications
-- Latest submissions feed
+- Auto-rolling announcements from CTFd notifications (large font for big screens)
+- Latest submissions feed (optimised font size for large displays)
 - Gold/silver/bronze podium styling for top 3
 - Neon hacker theme aligned with CTFd instance
-- 4K display support
+- 4K / big screen display support with responsive clamp-based font sizing
 
 ## Configuration
 
