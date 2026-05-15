@@ -1,11 +1,13 @@
 <html>
   <head>
     <title>Live Scoreboard | {{ title }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
     <div class="container timer-middle">
       <div>
+        <img src="{{ url_for('static', filename='images/first-org-RGB.png') }}" alt="FIRST.org" class="logo">
         <p class="column-header">Countdown</p>
         <div id="clockdiv">
           <div>

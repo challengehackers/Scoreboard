@@ -1,12 +1,16 @@
 <html>
   <head>
     <title>Live Scoreboard | {{ title }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
     <div class="container">
       <div class="column">
-        <p class="column-header">Scoreboard</p>
+        <div class="column-header-wrapper">
+          <img src="{{ url_for('static', filename='images/first-org-RGB.png') }}" alt="FIRST.org" class="logo">
+          <p class="column-header">Scoreboard</p>
+        </div>
         <img id="loading" src="{{ url_for('static', filename='images/loading.svg') }}">
         <div id="scoreboard" class="js-loop">{# Formatted scoreboard that will be pulled using Javascript #}</div>
       </div>
