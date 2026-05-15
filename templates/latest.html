@@ -1,10 +1,10 @@
 {# Formatted Data For Scoreboard #}
 
-<p class="column-header">Latest Submissions</p>
-<table border="1">
+<p class="column-header">Latest Solves</p>
+<table>
   {% for submission in data %}
   <tr>
-    <td>{{ submission.challpoints|string }}</td>
+    <td>+{{ submission.challpoints }}</td>
     <td>{{ submission.challname }}</td>
     <td>{{ submission.teamname }}</td>
     <td>{{ submission.time }}</td>

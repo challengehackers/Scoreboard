@@ -1,5 +1,9 @@
 
-@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Share+Tech+Mono&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
 
 ::-webkit-scrollbar {
     display: none;
@@ -8,167 +12,391 @@
 html, body {
     padding: 0;
     margin: 0;
+    height: 100%;
+    overflow: hidden;
 }
 
 html {
-    font-size: clamp(16px, 1.2vw, 32px);
+    font-size: clamp(14px, 0.9vw, 28px);
 }
 
 body {
-    background-color: #151515;
-    font-family: Monaco, 'Bitstream Vera Sans Mono', 'Lucida Console', Terminal, monospace;
+    background-color: #0a0a0f;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(181,232,83,0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(104,182,255,0.03) 0%, transparent 50%);
+    font-family: 'Share Tech Mono', Monaco, monospace;
     color: #eaeaea;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(rgba(181,232,83,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(181,232,83,0.03) 1px, transparent 1px);
+    background-size: 4em 4em;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .logo {
     display: block;
-    margin: 1em auto 0.5em auto;
-    height: 50px;
+    margin: 0.8vh auto 0.5vh auto;
+    height: clamp(30px, 5vh, 60px);
     width: auto;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 8px rgba(181,232,83,0.3));
 }
 
 .container {
     display: flex;
     justify-content: space-evenly;
-    margin-top: 0.5em;
+    margin-top: 0.5vh;
+    height: calc(92vh - clamp(30px, 5vh, 60px));
+    position: relative;
+    z-index: 1;
 }
 
 .column {
-    width: 40vw;
+    width: 46vw;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 90vh;
+    height: 100%;
+    padding: 0 1vw;
 }
 
 .column-header {
     color: #b5e853;
+    font-family: 'Orbitron', monospace;
     font-weight: 700;
-    letter-spacing: 5px;
-    font-size: 1em;
+    letter-spacing: 0.3em;
+    font-size: clamp(0.7em, 1vw, 1.1em);
     text-align: center;
     text-transform: uppercase;
-    margin-bottom: 1.2em;
-    text-shadow: 0 1px 1px rgba(0,0,0,.1), 0 0 5px rgba(181,232,83,.1), 0 0 10px rgba(181,232,83,.1);
+    margin-bottom: 0.8em;
+    text-shadow:
+        0 0 7px rgba(181,232,83,0.6),
+        0 0 20px rgba(181,232,83,0.3),
+        0 0 40px rgba(181,232,83,0.1);
+    position: relative;
 }
 
+.column-header::after {
+    content: '';
+    display: block;
+    width: 60%;
+    height: 1px;
+    margin: 0.5em auto 0;
+    background: linear-gradient(90deg, transparent, rgba(181,232,83,0.5), transparent);
+}
+
+/* Loading */
 #loading {
-    width: 160px;
+    width: clamp(80px, 10vw, 160px);
     position: relative;
     top: 10em;
+    opacity: 0.7;
 }
 
+/* Scoreboard */
 #scoreboard {
     width: 100%;
-    height: 85vh;
+    flex: 1;
     overflow-y: scroll;
+    min-height: 0;
 }
 
 .team {
     color: #eaeaea;
-    margin-bottom: 1.3em;
+    margin-bottom: clamp(0.6em, 1.2vw, 1.3em);
+    padding: 0.5em 0.8em;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+}
+
+.team:hover {
+    background: rgba(181,232,83,0.05);
+    border-color: rgba(181,232,83,0.2);
+    transform: translateX(3px);
+}
+
+/* Podium styling */
+.team:nth-child(1) {
+    background: linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,215,0,0.02));
+    border-color: rgba(255,215,0,0.3);
+    box-shadow: 0 0 15px rgba(255,215,0,0.05);
+}
+
+.team:nth-child(1) .team-position {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255,215,0,0.5);
+}
+
+.team:nth-child(2) {
+    background: linear-gradient(135deg, rgba(192,192,192,0.06), rgba(192,192,192,0.02));
+    border-color: rgba(192,192,192,0.2);
+}
+
+.team:nth-child(2) .team-position {
+    color: #c0c0c0;
+    text-shadow: 0 0 8px rgba(192,192,192,0.4);
+}
+
+.team:nth-child(3) {
+    background: linear-gradient(135deg, rgba(205,127,50,0.06), rgba(205,127,50,0.02));
+    border-color: rgba(205,127,50,0.2);
+}
+
+.team:nth-child(3) .team-position {
+    color: #cd7f32;
+    text-shadow: 0 0 8px rgba(205,127,50,0.4);
 }
 
 .team-position {
     color: #b5e853;
-    text-align: right;
-    border-right: 1px solid #4a4a4a;
-    align-self: center;
-    height: 1em;
-    width: 1em;
-    padding: 0.5em 0.8em 0.5em 0;
-    margin-right: 1.2em;
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.2em;
+    min-width: 2em;
+    text-align: center;
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 1px solid rgba(181,232,83,0.2);
 }
 
 .team-contents {
-    display: flex;  
+    display: flex;
+    align-items: center;
+    flex: 1;
 }
 
 .team-name {
-    font-size: 1.6em;
-    letter-spacing: 2.5px;
+    font-size: clamp(1em, 1.4vw, 1.6em);
+    letter-spacing: 1.5px;
     color: #fff;
+    font-weight: 700;
 }
 
 .team-solved {
-    color: #888;
-    letter-spacing: 2px;
+    color: #666;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    font-size: 0.7em;
+    font-size: clamp(0.55em, 0.7vw, 0.7em);
     font-weight: 700;
 }
 
 .team-score {
-    font-family: 'Roboto Mono', Monaco, monospace;
-    font-size: 2.3em;
-    position: relative;
-    bottom: 3px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: clamp(1.2em, 2vw, 2.3em);
     color: #b5e853;
+    text-shadow: 0 0 10px rgba(181,232,83,0.4);
+    white-space: nowrap;
 }
 
+/* Right column */
 .column-2 {
     display: flex;
     flex-direction: column;
+    gap: 1.5vh;
 }
 
+/* Clock */
 #clockdiv {
     color: #eaeaea;
-    display: inline-block;
-    text-align: center;
-    font-size: 2.8em;
+    display: flex;
+    justify-content: center;
+    gap: clamp(5px, 0.5vw, 12px);
+    font-size: clamp(1.2em, 1.8vw, 2.2em);
 }
 
 #clockdiv > div {
-    padding: 10px;
-    border-radius: 3px;
-    background: rgba(0,0,0,.9);
-    border: 1px solid hsla(0,0%,100%,.15);
-    display: inline-block;
+    padding: clamp(5px, 0.5vw, 10px);
+    border-radius: 6px;
+    background: rgba(10,10,15,0.9);
+    border: 1px solid rgba(181,232,83,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 3em;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
 }
 
 #clockdiv div > span {
-    padding: 15px;
-    border-radius: 3px;
-    background: #0a0a0a;
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    background: #050508;
     display: inline-block;
     color: #b5e853;
+    text-shadow: 0 0 10px rgba(181,232,83,0.6), 0 0 20px rgba(181,232,83,0.3);
+    border: 1px solid rgba(181,232,83,0.1);
 }
 
 .smalltext {
-    padding-top: 0.5em;
-    font-size: 16px;
+    padding-top: 0.4em;
+    font-size: clamp(8px, 0.6vw, 14px);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #888;
+    color: #555;
 }
 
-#latest table, #latest td {
-    color: #eaeaea;
-    border: 1px solid #4a4a4a;
+/* Trend Graph */
+#trendgraph {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(10,10,15,0.5);
+    border: 1px solid rgba(181,232,83,0.1);
+    border-radius: 6px;
+    padding: 0.8em;
+}
+
+#trendgraph .column-header {
+    margin-bottom: 0.4em;
+    font-size: clamp(0.6em, 0.8vw, 0.9em);
+}
+
+#trendCanvas {
+    flex: 1;
+    min-height: 0;
+    width: 100% !important;
+}
+
+/* Latest Submissions */
+#latest {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    width: 100%;
+}
+
+#latest .column-header {
+    font-size: clamp(0.6em, 0.8vw, 0.9em);
+    margin-bottom: 0.5em;
+}
+
+#latest table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.65em, 0.8vw, 0.9em);
 }
 
 #latest td {
-    padding: 0.4em 1.2em;
+    padding: 0.4em 0.8em;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #ccc;
+}
+
+#latest tr {
+    transition: background 0.2s ease;
+}
+
+#latest tr:hover {
+    background: rgba(181,232,83,0.05);
+}
+
+#latest td:first-child {
+    color: #b5e853;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
     font-size: 0.9em;
 }
 
+#latest td:nth-child(2) {
+    color: #fff;
+}
+
+#latest td:last-child {
+    color: #555;
+    font-size: 0.85em;
+}
+
+/* Timer page */
 .timer-middle {
     justify-content: center;
     align-items: center;
     min-height: 80vh;
 }
 
+/* Footer */
 footer {
-    color: #666;
-    font-family: Monaco, 'Bitstream Vera Sans Mono', monospace;
+    color: rgba(181,232,83,0.3);
+    font-family: 'Share Tech Mono', monospace;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 5px;
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
+    letter-spacing: 3px;
+    font-size: clamp(8px, 0.6vw, 12px);
+    position: fixed;
+    bottom: 0.5vh;
+    right: 1vw;
+    z-index: 10;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 10px rgba(181,232,83,0.4); }
+    50% { text-shadow: 0 0 20px rgba(181,232,83,0.7), 0 0 40px rgba(181,232,83,0.3); }
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.team {
+    animation: fade-in-up 0.4s ease forwards;
+}
+
+/* 4K specific adjustments */
+@media (min-width: 2560px) {
+    html {
+        font-size: clamp(18px, 0.8vw, 36px);
+    }
+
+    .team {
+        padding: 0.7em 1.2em;
+        margin-bottom: 1em;
+    }
+
+    #clockdiv > div {
+        min-width: 3.5em;
+    }
+
+    .logo {
+        height: clamp(40px, 4vh, 80px);
+    }
+}
+
+@media (min-width: 3840px) {
+    html {
+        font-size: clamp(22px, 0.7vw, 42px);
+    }
+
+    .team {
+        padding: 0.8em 1.5em;
+        border-radius: 6px;
+    }
+
+    #clockdiv div > span {
+        padding: 0.3em 0.5em;
+    }
 }

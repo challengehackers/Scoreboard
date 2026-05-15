@@ -1,15 +1,14 @@
 {# Formatted Data For Scoreboard #}
 
 {% for team in teams %}
-<div class="team">
+<div class="team" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+  <div class="team-position">{{ team.position }}</div>
   <div class="team-contents">
-    <div class="team-position">{{ team.position|string }}</div>
     <div class="team-meta">
       <div class="team-name">{{ team.name }}</div>
-      <div class="team-solved">{{ team.solved|string }} Challenges Solved</div>
+      <div class="team-solved">{{ team.solved }} solved</div>
     </div>
   </div>
   <div class="team-score">{{ team.score }}</div>
 </div>
 {% endfor %}
-

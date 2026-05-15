@@ -105,6 +105,20 @@ def data():
     data = getData()
     return render_template('data.html', teams=data)
 
+@app.route('/trenddata')
+def trenddata():
+    from flask import jsonify
+    data = getData()
+    trend = {}
+    for team in data[:10]:
+        points = []
+        cumulative = 0
+        for solve in sorted(team.solves, key=lambda x: x['date']):
+            cumulative += solve['value']
+            points.append({'x': solve['date'], 'y': cumulative})
+        trend[team.name] = points
+    return jsonify(trend)
+
 @app.route('/scoreboard')
 def scoreboard():
     return render_template('scoreboard.html', deadline=CTF_DEADLINE, title=CTF_TITLE)

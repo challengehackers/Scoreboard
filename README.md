@@ -1,6 +1,18 @@
-# GCTF2017-Scoreboard updated for FIRSTCON25
+# FIRST CTF Scoreboard
+
+Live scoreboard for FIRST CTF events, featuring real-time score updates, countdown timer, score trend graph, and latest submissions feed.
 
 ![Final Results Screenshot](screenshots/results.png)
+
+## Features
+
+- Real-time scoreboard with auto-scroll and periodic refresh
+- Countdown timer to CTF end
+- Score trend graph (top 10 teams over time)
+- Latest submissions feed
+- Gold/silver/bronze podium styling for top 3
+- Neon hacker theme aligned with CTFd instance
+- 4K display support
 
 ## Configuration
 
@@ -15,10 +27,10 @@ All parameters are configured via environment variables:
 
 ## Local setup
 
-* Requires Python3 and virtualenv
+Requires Python 3 and virtualenv.
 
 ```bash
-virtualenv -p /usr/bin/python3 env
+virtualenv -p python3 env
 source env/bin/activate
 pip install -r requirements.txt
 
@@ -30,21 +42,61 @@ export CTF_TITLE="FIRST CTF 2026"
 python app.py
 ```
 
-* Visit http://localhost:8080
+Visit http://localhost:8080
 
 ## Docker setup
 
-* Build the container
+Build the container:
+
 ```bash
 docker build -t scoreboard .
 ```
 
-* Run the container in background
+Run the container:
+
 ```bash
 docker run -p 8888:80 -d \
   -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
   -e CTFD_API_KEY=ctfd_xxxxxxxxxxxx \
   -e CTF_DEADLINE="June 25 2026 17:00:00 GMT+0200" \
   -e CTF_TITLE="FIRST CTF 2026" \
+  --name scoreboard \
   scoreboard
 ```
+
+## Deployment (scoreboard.ctfsig.org)
+
+The scoreboard runs as a Docker container on the CTF infrastructure. To redeploy:
+
+```bash
+rsync -avz --exclude='env/' --exclude='__pycache__/' --exclude='.git/' ./ ubuntu@scoreboard.ctfsig.org:/home/ubuntu/Scoreboard/
+
+ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
+  sudo docker build -t scoreboard . && \
+  sudo docker stop scoreboard && \
+  sudo docker rm scoreboard && \
+  sudo docker run -p 8888:80 -d --name scoreboard \
+    -e CTFD_BASE_URL=https://ctfdev.firstseclounge.org/api/v1 \
+    -e CTF_DEADLINE='June 18 2026 16:00:00 GMT-0600' \
+    -e CTF_TITLE='FIRST CTF 2026' \
+    scoreboard"
+```
+
+## Routes
+
+| Path          | Description                              |
+|---------------|------------------------------------------|
+| `/`           | Redirects to `/scoreboard`               |
+| `/scoreboard` | Main display (embeds all other panes)    |
+| `/data`       | Team rankings (loaded via AJAX)          |
+| `/latest`     | Latest submissions (loaded via AJAX)     |
+| `/trenddata`  | Score trend JSON for Chart.js            |
+| `/timer`      | Standalone countdown page                |
+| `/results`    | Final results page                       |
+
+## Tech stack
+
+- Python 3 / Flask / Gunicorn
+- Chart.js (score trend graph)
+- jQuery (AJAX data loading)
+- Google Fonts: Orbitron, Share Tech Mono, Roboto Mono
