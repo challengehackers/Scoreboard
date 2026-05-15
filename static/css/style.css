@@ -114,6 +114,62 @@ body::before {
     min-height: 0;
 }
 
+/* Notifications */
+#notifications-box {
+    width: 100%;
+    max-height: 12vh;
+    margin-top: 0.8em;
+    background: rgba(10,10,15,0.7);
+    border: 1px solid rgba(181,232,83,0.15);
+    border-radius: 6px;
+    padding: 0.5em 0.8em;
+    display: flex;
+    flex-direction: column;
+}
+
+#notifications-box .column-header {
+    font-size: clamp(0.55em, 0.7vw, 0.8em);
+    margin-bottom: 0.3em;
+    letter-spacing: 0.2em;
+}
+
+#notifications-box .column-header::after {
+    display: none;
+}
+
+#notifications-content {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.notif-item {
+    padding: 0.3em 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: clamp(0.6em, 0.75vw, 0.85em);
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-title {
+    color: #ffb86c;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.85em;
+    margin-right: 0.8em;
+}
+
+.notif-text {
+    color: #ccc;
+}
+
+.notif-empty {
+    color: #555;
+    font-style: italic;
+}
+
 .team {
     color: #eaeaea;
     margin-bottom: clamp(0.6em, 1.2vw, 1.3em);

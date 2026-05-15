@@ -1,6 +1,6 @@
 # FIRST CTF Scoreboard
 
-Live scoreboard for FIRST CTF events, featuring real-time score updates, countdown timer, score trend graph, and latest submissions feed.
+Live scoreboard for FIRST CTF events, featuring real-time score updates, countdown timer, score trend graph, announcements feed, and latest submissions.
 
 ![Final Results Screenshot](screenshots/results.png)
 
@@ -9,6 +9,7 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 - Real-time scoreboard with auto-scroll and periodic refresh
 - Countdown timer to CTF end
 - Score trend graph (top 10 teams over time)
+- Auto-rolling announcements from CTFd notifications
 - Latest submissions feed
 - Gold/silver/bronze podium styling for top 3
 - Neon hacker theme aligned with CTFd instance
@@ -84,19 +85,20 @@ ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
 
 ## Routes
 
-| Path          | Description                              |
-|---------------|------------------------------------------|
-| `/`           | Redirects to `/scoreboard`               |
-| `/scoreboard` | Main display (embeds all other panes)    |
-| `/data`       | Team rankings (loaded via AJAX)          |
-| `/latest`     | Latest submissions (loaded via AJAX)     |
-| `/trenddata`  | Score trend JSON for Chart.js            |
-| `/timer`      | Standalone countdown page                |
-| `/results`    | Final results page                       |
+| Path             | Description                              |
+|------------------|------------------------------------------|
+| `/`              | Redirects to `/scoreboard`               |
+| `/scoreboard`    | Main display (embeds all other panes)    |
+| `/data`          | Team rankings (loaded via AJAX)          |
+| `/latest`        | Latest submissions (loaded via AJAX)     |
+| `/trenddata`     | Score trend JSON for Chart.js            |
+| `/notifications` | CTFd announcements (loaded via AJAX)     |
+| `/timer`         | Standalone countdown page                |
+| `/results`       | Final results page                       |
 
 ## Tech stack
 
 - Python 3 / Flask / Gunicorn
 - Chart.js (score trend graph)
 - jQuery (AJAX data loading)
-- Google Fonts: Orbitron, Share Tech Mono, Roboto Mono
+- Google Fonts: Orbitron, VT323, Fira Code

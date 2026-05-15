@@ -119,6 +119,16 @@ def trenddata():
         trend[team.name] = points
     return jsonify(trend)
 
+@app.route('/notifications')
+def notifications():
+    from flask import jsonify
+    try:
+        raw = requests.get('{}/notifications'.format(BASEURL), headers=get_headers(), timeout=4)
+        data = raw.json().get('data', [])
+    except Exception:
+        data = []
+    return jsonify(data)
+
 @app.route('/scoreboard')
 def scoreboard():
     return render_template('scoreboard.html', deadline=CTF_DEADLINE, title=CTF_TITLE)

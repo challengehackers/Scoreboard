@@ -14,6 +14,10 @@
         <p class="column-header">Scoreboard</p>
         <img id="loading" src="{{ url_for('static', filename='images/loading.svg') }}">
         <div id="scoreboard" class="js-loop">{# Formatted scoreboard that will be pulled using Javascript #}</div>
+        <div id="notifications-box">
+          <p class="column-header">Announcements</p>
+          <div id="notifications-content"></div>
+        </div>
       </div>
       <div class="column column-2">
         <div>
@@ -304,6 +308,50 @@ function loadTrendGraph() {
   });
 }
 loadTrendGraph();
+
+// Notifications
+var notificationsDelay = 30 * 1000;
+var notifScrollInterval = null;
+
+function loadNotifications() {
+  $.ajax({
+    url: "{{ url_for('notifications') }}",
+    type: "get",
+    success: function(data) {
+      var container = $('#notifications-content');
+      if (!data || data.length === 0) {
+        container.html('<div class="notif-item notif-empty">No announcements yet</div>');
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < data.length; i++) {
+        var n = data[i];
+        html += '<div class="notif-item">';
+        html += '<span class="notif-title">' + (n.title || '') + '</span>';
+        if (n.content) {
+          html += '<span class="notif-text">' + n.content + '</span>';
+        }
+        html += '</div>';
+      }
+      container.html(html);
+
+      // Auto-scroll notifications if content overflows
+      if (notifScrollInterval) clearInterval(notifScrollInterval);
+      var el = container[0];
+      if (el.scrollHeight > el.clientHeight) {
+        notifScrollInterval = setInterval(function() {
+          el.scrollTop += 1;
+          if (el.scrollTop >= el.scrollHeight - el.clientHeight) {
+            el.scrollTop = 0;
+          }
+        }, 80);
+      }
+    },
+    global: false
+  });
+  setTimeout(loadNotifications, notificationsDelay);
+}
+loadNotifications();
 
     </script>
   </body>
