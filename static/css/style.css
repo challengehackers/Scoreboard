@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css?family=PT+Sans:400,700|Roboto+Mono');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Mono');
 
 ::-webkit-scrollbar {
     display: none;
@@ -15,8 +15,16 @@ html {
 }
 
 body {
-    background-color: #17192a;
-    font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+    background-color: #151515;
+    font-family: Monaco, 'Bitstream Vera Sans Mono', 'Lucida Console', Terminal, monospace;
+    color: #eaeaea;
+}
+
+.logo {
+    display: block;
+    margin: 1em auto 0.5em auto;
+    height: 50px;
+    width: auto;
 }
 
 .container {
@@ -34,13 +42,14 @@ body {
 }
 
 .column-header {
-    color: #c9af85;
+    color: #b5e853;
     font-weight: 700;
     letter-spacing: 5px;
     font-size: 1em;
     text-align: center;
     text-transform: uppercase;
     margin-bottom: 1.2em;
+    text-shadow: 0 1px 1px rgba(0,0,0,.1), 0 0 5px rgba(181,232,83,.1), 0 0 10px rgba(181,232,83,.1);
 }
 
 #loading {
@@ -56,7 +65,7 @@ body {
 }
 
 .team {
-    color: #efefef;
+    color: #eaeaea;
     margin-bottom: 1.3em;
     display: flex;
     align-items: flex-end;
@@ -64,9 +73,9 @@ body {
 }
 
 .team-position {
-    color: #c9af85;
+    color: #b5e853;
     text-align: right;
-    border-right: 1px solid #4c4742;
+    border-right: 1px solid #4a4a4a;
     align-self: center;
     height: 1em;
     width: 1em;
@@ -81,10 +90,11 @@ body {
 .team-name {
     font-size: 1.6em;
     letter-spacing: 2.5px;
+    color: #fff;
 }
 
 .team-solved {
-    color: #8e8e8e;
+    color: #888;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 0.7em;
@@ -92,10 +102,11 @@ body {
 }
 
 .team-score {
-    font-family: 'Roboto Mono', Courier, monospace;
+    font-family: 'Roboto Mono', Monaco, monospace;
     font-size: 2.3em;
     position: relative;
     bottom: 3px;
+    color: #b5e853;
 }
 
 .column-2 {
@@ -104,7 +115,7 @@ body {
 }
 
 #clockdiv {
-    color: #efefef;
+    color: #eaeaea;
     display: inline-block;
     text-align: center;
     font-size: 2.8em;
@@ -113,15 +124,17 @@ body {
 #clockdiv > div {
     padding: 10px;
     border-radius: 3px;
-    background: #1f2137;
+    background: rgba(0,0,0,.9);
+    border: 1px solid hsla(0,0%,100%,.15);
     display: inline-block;
 }
 
 #clockdiv div > span {
     padding: 15px;
     border-radius: 3px;
-    background: #171929;
+    background: #0a0a0a;
     display: inline-block;
+    color: #b5e853;
 }
 
 .smalltext {
@@ -130,11 +143,12 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 2px;
+    color: #888;
 }
 
 #latest table, #latest td {
-    color: #efefef;
-    border: 1px solid #252842;
+    color: #eaeaea;
+    border: 1px solid #4a4a4a;
 }
 
 #latest td {
@@ -142,15 +156,15 @@ body {
     font-size: 0.9em;
 }
 
-.logo {
-    display: block;
-    margin: 1em auto 0 auto;
-    max-height: 60px;
+.timer-middle {
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
 }
 
 footer {
-    color: #3f4577;
-    font-family: 'PT Sans', Helvetica, Arial, sans-serif;
+    color: #666;
+    font-family: Monaco, 'Bitstream Vera Sans Mono', monospace;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 5px;
