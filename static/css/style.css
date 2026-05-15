@@ -17,7 +17,7 @@ html, body {
 }
 
 html {
-    font-size: clamp(14px, 0.9vw, 28px);
+    font-size: clamp(16px, 1.1vw, 32px);
 }
 
 body {
@@ -25,7 +25,7 @@ body {
     background-image:
         radial-gradient(ellipse at 20% 50%, rgba(181,232,83,0.03) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(104,182,255,0.03) 0%, transparent 50%);
-    font-family: 'VT323', 'Courier New', monospace;
+    font-family: 'Fira Code', 'Courier New', monospace;
     color: #eaeaea;
     position: relative;
 }
@@ -47,8 +47,8 @@ body::before {
 
 .logo {
     display: block;
-    margin: 0.8vh auto 0.5vh auto;
-    height: clamp(40px, 7vh, 90px);
+    margin: 0.4vh auto 0.3vh auto;
+    height: clamp(100px, 15vh, 210px);
     width: auto;
     position: relative;
     z-index: 1;
@@ -58,8 +58,8 @@ body::before {
 .container {
     display: flex;
     justify-content: space-evenly;
-    margin-top: 0.5vh;
-    height: calc(90vh - clamp(40px, 7vh, 90px));
+    margin-top: 0.3vh;
+    height: calc(83vh - clamp(100px, 15vh, 210px));
     position: relative;
     z-index: 1;
 }
@@ -81,7 +81,7 @@ body::before {
     font-size: clamp(0.7em, 1vw, 1.1em);
     text-align: center;
     text-transform: uppercase;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.5em;
     text-shadow:
         0 0 7px rgba(181,232,83,0.6),
         0 0 20px rgba(181,232,83,0.3),
@@ -144,9 +144,9 @@ body::before {
 }
 
 .notif-item {
-    padding: 0.4em 0;
+    padding: 0.3em 0;
     border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-size: clamp(0.9em, 1.1vw, 1.3em);
+    font-size: clamp(1em, 1.3vw, 1.5em);
 }
 
 .notif-item:last-child {
@@ -172,8 +172,8 @@ body::before {
 
 .team {
     color: #eaeaea;
-    margin-bottom: clamp(0.6em, 1.2vw, 1.3em);
-    padding: 0.5em 0.8em;
+    margin-bottom: clamp(0.3em, 0.6vw, 0.7em);
+    padding: 0.35em 0.8em;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -243,7 +243,7 @@ body::before {
     font-size: clamp(1em, 1.4vw, 1.6em);
     letter-spacing: 1.5px;
     color: #fff;
-    font-family: 'VT323', monospace;
+    font-family: 'Fira Code', monospace;
     font-weight: 400;
 }
 
@@ -269,7 +269,7 @@ body::before {
 .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 1.5vh;
+    gap: 1vh;
 }
 
 /* Clock */
@@ -329,7 +329,7 @@ body::before {
 
 #trendgraph .column-header {
     margin-bottom: 0.4em;
-    font-size: clamp(0.6em, 0.8vw, 0.9em);
+    font-size: clamp(0.8em, 1vw, 1.1em);
 }
 
 #trendCanvas {
@@ -354,11 +354,11 @@ body::before {
 #latest table {
     width: 100%;
     border-collapse: collapse;
-    font-size: clamp(0.85em, 1vw, 1.15em);
+    font-size: clamp(0.9em, 1.1vw, 1.3em);
 }
 
 #latest td {
-    padding: 0.4em 0.8em;
+    padding: 0.25em 0.6em;
     border: none;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     color: #ccc;
@@ -427,12 +427,12 @@ footer {
 /* 4K specific adjustments */
 @media (min-width: 2560px) {
     html {
-        font-size: clamp(18px, 0.8vw, 36px);
+        font-size: clamp(20px, 1vw, 40px);
     }
 
     .team {
-        padding: 0.7em 1.2em;
-        margin-bottom: 1em;
+        padding: 0.5em 1.2em;
+        margin-bottom: 0.6em;
     }
 
     #clockdiv > div {
@@ -440,17 +440,17 @@ footer {
     }
 
     .logo {
-        height: clamp(50px, 6vh, 100px);
+        height: clamp(120px, 15vh, 240px);
     }
 }
 
 @media (min-width: 3840px) {
     html {
-        font-size: clamp(22px, 0.7vw, 42px);
+        font-size: clamp(26px, 0.9vw, 48px);
     }
 
     .team {
-        padding: 0.8em 1.5em;
+        padding: 0.5em 1.5em;
         border-radius: 6px;
     }
 

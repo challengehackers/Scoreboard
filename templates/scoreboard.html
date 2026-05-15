@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
-    <img src="{{ url_for('static', filename='images/first.png') }}" alt="FIRST.org" class="logo">
+    <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo">
     <div class="container">
       <div class="column">
         <p class="column-header">Scoreboard</p>
@@ -288,17 +288,17 @@ function loadTrendGraph() {
           scales: {
             x: {
               type: 'time',
-              ticks: { color: '#888', maxTicksLimit: 5 },
+              ticks: { color: '#888', maxTicksLimit: 5, font: { size: 12 } },
               grid: { color: '#333' }
             },
             y: {
-              ticks: { color: '#888' },
+              ticks: { color: '#888', font: { size: 12 } },
               grid: { color: '#333' }
             }
           },
           plugins: {
             legend: {
-              labels: { color: '#eaeaea', boxWidth: 12, font: { size: 10 } }
+              labels: { color: '#eaeaea', boxWidth: 14, font: { size: 14 } }
             }
           }
         }
