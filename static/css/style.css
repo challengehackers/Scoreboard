@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Mono:wght@400;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=VT323&family=Fira+Code:wght@400;700&display=swap');
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -25,7 +25,7 @@ body {
     background-image:
         radial-gradient(ellipse at 20% 50%, rgba(181,232,83,0.03) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(104,182,255,0.03) 0%, transparent 50%);
-    font-family: 'Share Tech Mono', Monaco, monospace;
+    font-family: 'VT323', 'Courier New', monospace;
     color: #eaeaea;
     position: relative;
 }
@@ -48,7 +48,7 @@ body::before {
 .logo {
     display: block;
     margin: 0.8vh auto 0.5vh auto;
-    height: clamp(30px, 5vh, 60px);
+    height: clamp(40px, 7vh, 90px);
     width: auto;
     position: relative;
     z-index: 1;
@@ -59,7 +59,7 @@ body::before {
     display: flex;
     justify-content: space-evenly;
     margin-top: 0.5vh;
-    height: calc(92vh - clamp(30px, 5vh, 60px));
+    height: calc(90vh - clamp(40px, 7vh, 90px));
     position: relative;
     z-index: 1;
 }
@@ -187,7 +187,8 @@ body::before {
     font-size: clamp(1em, 1.4vw, 1.6em);
     letter-spacing: 1.5px;
     color: #fff;
-    font-weight: 700;
+    font-family: 'VT323', monospace;
+    font-weight: 400;
 }
 
 .team-solved {
@@ -195,7 +196,8 @@ body::before {
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-size: clamp(0.55em, 0.7vw, 0.7em);
-    font-weight: 700;
+    font-family: 'Fira Code', monospace;
+    font-weight: 400;
 }
 
 .team-score {
@@ -340,11 +342,11 @@ body::before {
 /* Footer */
 footer {
     color: rgba(181,232,83,0.3);
-    font-family: 'Share Tech Mono', monospace;
-    font-weight: 700;
+    font-family: 'VT323', monospace;
+    font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 3px;
-    font-size: clamp(8px, 0.6vw, 12px);
+    font-size: clamp(10px, 0.8vw, 16px);
     position: fixed;
     bottom: 0.5vh;
     right: 1vw;
@@ -382,7 +384,7 @@ footer {
     }
 
     .logo {
-        height: clamp(40px, 4vh, 80px);
+        height: clamp(50px, 6vh, 100px);
     }
 }
 
