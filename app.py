@@ -5,9 +5,15 @@
 import requests, time
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
+from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_TITLE
 
 app = Flask(__name__)
-BASEURL = 'https://ctf.firstseclounge.org/api/v1'
+
+def get_headers():
+    headers = {'User-Agent': 'SIG SecLounge Scoreboard'}
+    if API_KEY:
+        headers['Authorization'] = 'Token {}'.format(API_KEY)
+    return headers
 
 @app.route('/')
 def index():
@@ -40,10 +46,7 @@ def getLatest():
                 print('[*] Downloading team {} info for chall {}...'.format(chall['team_id'], chall['challenge_id']))
 
 
-                headers = {
-                    'User-Agent': 'SIG SecLounge Scoreboard',
-                }
-                raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team_id']), headers=headers, timeout=3)
+                raw = requests.get('{}/teams/{}/solves'.format(BASEURL, chall['team_id']), headers=get_headers(), timeout=3)
                 parsed = raw.json()["data"]
                 downloadedTeams[chall['team_id']] = parsed
             else:
@@ -84,10 +87,7 @@ def getData():
     while True:
         try:
             print('[*] Downloading scoreboard data...')
-            headers = {
-                'User-Agent': 'SIG SecLounge Scoreboard',
-            }
-            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), headers=headers, timeout=4)
+            raw = requests.get('{}/scoreboard/top/20'.format(BASEURL), headers=get_headers(), timeout=4)
             print('[+] Smexy...')
             parsed = raw.json()['data']
             for teamPosition, teamDict in parsed.items():
@@ -107,7 +107,7 @@ def data():
 
 @app.route('/scoreboard')
 def scoreboard():
-    return render_template('scoreboard.html')
+    return render_template('scoreboard.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
 
 @app.route('/results')
 def results():
@@ -115,7 +115,7 @@ def results():
 
 @app.route('/timer')
 def timer():
-    return render_template('timer.html')
+    return render_template('timer.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
 
 def create_app():
     return app
