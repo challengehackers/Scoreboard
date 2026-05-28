@@ -6,13 +6,13 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 
 ## Features
 
-- Real-time scoreboard (top 10 teams) with auto-scroll and periodic refresh
+- Real-time scoreboard (top 15 teams) with auto-scroll and periodic refresh
 - Countdown timer to CTF end
 - Score trend graph (top 10 teams over time)
 - Auto-rolling announcements from CTFd notifications (large font for big screens)
 - Latest submissions feed (optimised font size for large displays)
 - Gold/silver/bronze podium styling for top 3
-- Neon hacker theme aligned with CTFd instance
+- Multiple theme variants (neon hacker, 90s retro, 80s TRS-80)
 - 4K / big screen display support with responsive clamp-based font sizing
 
 ## Configuration
@@ -88,7 +88,9 @@ ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
 | Path             | Description                              |
 |------------------|------------------------------------------|
 | `/`              | Redirects to `/scoreboard`               |
-| `/scoreboard`    | Main display (embeds all other panes)    |
+| `/scoreboard`    | Main display — neon hacker theme         |
+| `/scoreboard90`  | 90s retro theme (multi-color, blink)     |
+| `/scoreboard80`  | 80s TRS-80 theme (monochrome green CRT)  |
 | `/data`          | Team rankings (loaded via AJAX)          |
 | `/latest`        | Latest submissions (loaded via AJAX)     |
 | `/trenddata`     | Score trend JSON for Chart.js            |
@@ -96,9 +98,24 @@ ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
 | `/timer`         | Standalone countdown page                |
 | `/results`       | Final results page                       |
 
+## Themes
+
+Three visual themes are available, each accessible via its own route:
+
+| Theme | Route | Description |
+|-------|-------|-------------|
+| Neon Hacker | `/scoreboard` | Default — dark background, green neon accents, Orbitron + Fira Code fonts |
+| 90s Retro | `/scoreboard90` | Black background, multi-color neon (green/cyan/yellow/red), Press Start 2P font, scanlines |
+| 80s TRS-80 | `/scoreboard80` | Monochrome green phosphor CRT, VT323 font, vignette, flicker, inspired by TRS-80 Model II |
+
+Theme files:
+- `static/css/style.css` — Neon Hacker
+- `static/css/style-90s.css` — 90s Retro
+- `static/css/style-80s.css` — 80s TRS-80
+
 ## Tech stack
 
 - Python 3 / Flask / Gunicorn
 - Chart.js (score trend graph)
 - jQuery (AJAX data loading)
-- Google Fonts: Orbitron, VT323, Fira Code
+- Google Fonts: Orbitron, VT323, Fira Code, Press Start 2P, Share Tech Mono
