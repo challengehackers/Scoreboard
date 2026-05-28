@@ -14,10 +14,6 @@
         <p class="column-header">Scoreboard</p>
         <img id="loading" src="{{ url_for('static', filename='images/loading.svg') }}">
         <div id="scoreboard" class="js-loop">{# Formatted scoreboard that will be pulled using Javascript #}</div>
-        <div id="notifications-box">
-          <p class="column-header">Announcements</p>
-          <div id="notifications-content"></div>
-        </div>
       </div>
       <div class="column column-2">
         <div>
@@ -46,6 +42,10 @@
           <canvas id="trendCanvas"></canvas>
         </div>
         <div id="latest"></div>
+        <div id="notifications-box">
+          <p class="column-header">Announcements</p>
+          <div id="notifications-content"></div>
+        </div>
       </div>
     </div>
     <footer>FIRST SIG SecLounge</footer>

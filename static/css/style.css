@@ -47,7 +47,7 @@ body::before {
 
 .logo {
     display: block;
-    margin: 0.4vh auto 0.3vh auto;
+    margin: 0.2vh auto 0.2vh auto;
     height: clamp(100px, 15vh, 210px);
     width: auto;
     position: relative;
@@ -58,8 +58,8 @@ body::before {
 .container {
     display: flex;
     justify-content: space-evenly;
-    margin-top: 0.3vh;
-    height: calc(83vh - clamp(100px, 15vh, 210px));
+    margin-top: 0.2vh;
+    height: calc(97vh - clamp(100px, 15vh, 210px));
     position: relative;
     z-index: 1;
 }
@@ -71,6 +71,7 @@ body::before {
     align-items: center;
     height: 100%;
     padding: 0 1vw;
+    justify-content: flex-start;
 }
 
 .column-header {
@@ -109,20 +110,20 @@ body::before {
 /* Scoreboard */
 #scoreboard {
     width: 100%;
-    flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto;
     min-height: 0;
+    flex: 1;
 }
 
 /* Notifications */
 #notifications-box {
     width: 100%;
-    max-height: 18vh;
-    margin-top: 0.8em;
+    flex: 1;
+    min-height: 0;
     background: rgba(10,10,15,0.7);
     border: 1px solid rgba(181,232,83,0.15);
     border-radius: 6px;
-    padding: 0.6em 1em;
+    padding: 0.4em 0.8em;
     display: flex;
     flex-direction: column;
 }
@@ -269,7 +270,8 @@ body::before {
 .column-2 {
     display: flex;
     flex-direction: column;
-    gap: 1vh;
+    gap: 0.5vh;
+    justify-content: stretch;
 }
 
 /* Clock */
@@ -324,7 +326,7 @@ body::before {
     background: rgba(10,10,15,0.5);
     border: 1px solid rgba(181,232,83,0.1);
     border-radius: 6px;
-    padding: 0.8em;
+    padding: 0.5em;
 }
 
 #trendgraph .column-header {
@@ -344,6 +346,10 @@ body::before {
     overflow-y: auto;
     min-height: 0;
     width: 100%;
+    background: rgba(10,10,15,0.5);
+    border: 1px solid rgba(181,232,83,0.1);
+    border-radius: 6px;
+    padding: 0.5em;
 }
 
 #latest .column-header {
