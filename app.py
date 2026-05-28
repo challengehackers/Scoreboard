@@ -133,6 +133,10 @@ def notifications():
 def scoreboard():
     return render_template('scoreboard.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
 
+@app.route('/scoreboard90')
+def scoreboard90():
+    return render_template('scoreboard-90s.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
+
 @app.route('/results')
 def results():
     return render_template('results.html')
