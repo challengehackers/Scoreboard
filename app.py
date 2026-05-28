@@ -137,6 +137,10 @@ def scoreboard():
 def scoreboard90():
     return render_template('scoreboard-90s.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
 
+@app.route('/scoreboard80')
+def scoreboard80():
+    return render_template('scoreboard-80s.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
+
 @app.route('/results')
 def results():
     return render_template('results.html')
