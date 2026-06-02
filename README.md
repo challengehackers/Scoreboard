@@ -21,7 +21,7 @@ All parameters are configured via environment variables:
 
 | Variable         | Description                        | Default                                          |
 |------------------|------------------------------------|--------------------------------------------------|
-| `CTFD_BASE_URL`  | CTFd API base URL                  | `https://ctfdev.firstseclounge.org/api/v1`       |
+| `CTFD_BASE_URL`  | CTFd API base URL                  | `https://ctf.firstseclounge.org/api/v1`          |
 | `CTFD_API_KEY`   | CTFd API token (optional)          | *(empty)*                                        |
 | `CTF_DEADLINE`   | Countdown end date                 | `December 12 2025 16:00:00 GMT+0100`             |
 | `CTF_TITLE`      | Title displayed on the scoreboard  | `FIRST CTF 2025`                                 |
@@ -77,7 +77,7 @@ ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
   sudo docker stop scoreboard && \
   sudo docker rm scoreboard && \
   sudo docker run -p 8888:80 -d --name scoreboard \
-    -e CTFD_BASE_URL=https://ctfdev.firstseclounge.org/api/v1 \
+    -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
     -e CTF_DEADLINE='June 18 2026 16:00:00 GMT-0600' \
     -e CTF_TITLE='FIRST CTF 2026' \
     scoreboard"
