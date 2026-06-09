@@ -5,7 +5,7 @@
 import requests, time
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
-from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_TITLE
+from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE
 
 app = Flask(__name__)
 
@@ -17,6 +17,14 @@ def get_headers():
 
 @app.route('/')
 def index():
+    from datetime import datetime, timezone
+    # Parse CTF_START and redirect to waiting page if CTF hasn't started
+    try:
+        start = datetime.strptime(CTF_START, '%B %d %Y %H:%M:%S GMT%z')
+        if datetime.now(timezone.utc) < start:
+            return redirect(url_for('waiting'))
+    except Exception:
+        pass
     return redirect(url_for('scoreboard'))
 
 class Latest():
@@ -148,6 +156,12 @@ def results():
 @app.route('/timer')
 def timer():
     return render_template('timer.html', deadline=CTF_DEADLINE, title=CTF_TITLE)
+
+@app.route('/waiting')
+def waiting():
+    return render_template('waiting.html', start=CTF_START, title=CTF_TITLE,
+                           registration_url=CTF_REGISTRATION_URL,
+                           registration_code=CTF_REGISTRATION_CODE)
 
 def create_app():
     return app
