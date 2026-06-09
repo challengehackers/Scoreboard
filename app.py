@@ -6,12 +6,19 @@ import requests, time, threading
 from datetime import datetime, timezone
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
-from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE
+from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE, CTF_THEME
 
 app = Flask(__name__)
 
 # Scoreboard freeze state
 _scoreboard_frozen = False
+
+# Theme routing map
+THEME_MAP = {
+    'default': {'waiting': 'waiting', 'scoreboard': 'scoreboard'},
+    '90s':     {'waiting': 'waiting90', 'scoreboard': 'scoreboard90'},
+    '80s':     {'waiting': 'waiting80', 'scoreboard': 'scoreboard80'},
+}
 
 def get_headers():
     headers = {'User-Agent': 'SIG SecLounge Scoreboard'}
@@ -21,13 +28,14 @@ def get_headers():
 
 @app.route('/')
 def index():
+    theme = THEME_MAP.get(CTF_THEME, THEME_MAP['80s'])
     try:
         start = datetime.strptime(CTF_START, '%B %d %Y %H:%M:%S GMT%z')
         if datetime.now(timezone.utc) < start:
-            return redirect(url_for('waiting'))
+            return redirect(url_for(theme['waiting']))
     except Exception:
         pass
-    return redirect(url_for('scoreboard'))
+    return redirect(url_for(theme['scoreboard']))
 
 class Latest():
     def __init__(self, teamname, challname, challcat, challpoints, date):
@@ -163,19 +171,22 @@ def timer():
 def waiting():
     return render_template('waiting.html', start=CTF_START, title=CTF_TITLE,
                            registration_url=CTF_REGISTRATION_URL,
-                           registration_code=CTF_REGISTRATION_CODE)
+                           registration_code=CTF_REGISTRATION_CODE,
+                           redirect_to=url_for('scoreboard'))
 
 @app.route('/waiting90')
 def waiting90():
     return render_template('waiting-90s.html', start=CTF_START, title=CTF_TITLE,
                            registration_url=CTF_REGISTRATION_URL,
-                           registration_code=CTF_REGISTRATION_CODE)
+                           registration_code=CTF_REGISTRATION_CODE,
+                           redirect_to=url_for('scoreboard90'))
 
 @app.route('/waiting80')
 def waiting80():
     return render_template('waiting-80s.html', start=CTF_START, title=CTF_TITLE,
                            registration_url=CTF_REGISTRATION_URL,
-                           registration_code=CTF_REGISTRATION_CODE)
+                           registration_code=CTF_REGISTRATION_CODE,
+                           redirect_to=url_for('scoreboard80'))
 
 # --- Scoreboard freeze logic ---
 def freeze_ctfd_scoreboard():

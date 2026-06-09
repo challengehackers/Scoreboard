@@ -10,4 +10,5 @@ ENV CTF_START="June 15 2026 10:00:00 GMT-0600"
 ENV CTF_TITLE="FIRST CTF 2026"
 ENV CTF_REGISTRATION_URL=https://ctf.firstseclounge.org
 ENV CTF_REGISTRATION_CODE=
+ENV CTF_THEME=80s
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "app:create_app()"]

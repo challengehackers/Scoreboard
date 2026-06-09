@@ -62,7 +62,7 @@
         var secondsSpan = clock.querySelector('.seconds');
         function updateClock() {
           var t = getTimeRemaining(endtime);
-          if (t.total <= 0) { location.reload(); return; }
+          if (t.total <= 0) { window.location.href = '{{ redirect_to }}'; return; }
           daysSpan.innerHTML = t.days;
           hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
           minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);

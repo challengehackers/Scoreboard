@@ -31,6 +31,7 @@ All parameters are configured via environment variables:
 | `CTF_TITLE`             | Title displayed on the scoreboard        | `FIRST CTF 2026`                            |
 | `CTF_REGISTRATION_URL`  | Registration URL shown on waiting page   | `https://ctf.firstseclounge.org`            |
 | `CTF_REGISTRATION_CODE` | Registration code shown on waiting page  | *(empty)*                                   |
+| `CTF_THEME`             | Active theme: `default`, `90s`, or `80s` | `80s`                                       |
 
 > **⚠️ Security note:** Never commit API keys. Pass `CTFD_API_KEY` via environment variable at runtime.
 
@@ -107,7 +108,7 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
 
 | Path             | Description                                                          |
 |------------------|----------------------------------------------------------------------|
-| `/`              | Smart redirect: `/waiting` before CTF start, `/scoreboard` after     |
+| `/`              | Smart redirect based on `CTF_THEME` and time (waiting → scoreboard) |
 | `/waiting`       | Pre-CTF page: large countdown + registration info (neon hacker)      |
 | `/waiting90`     | Pre-CTF page — 90s retro theme                                      |
 | `/waiting80`     | Pre-CTF page — 80s TRS-80 theme                                     |
@@ -125,8 +126,8 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
 
 The scoreboard adapts automatically based on time:
 
-1. **Before CTF start** — `/` redirects to `/waiting` (big countdown + registration details)
-2. **During CTF** — `/` redirects to `/scoreboard` (live scores, trend graph, submissions)
+1. **Before CTF start** — `/` redirects to the waiting page matching `CTF_THEME`
+2. **During CTF** — `/` redirects to the scoreboard matching `CTF_THEME`
 3. **Last hour** — Scoreboard page switches to a full-screen red "FINAL COUNTDOWN" overlay; a background thread automatically freezes CTFd scores (`score_visibility → admins`)
 4. **After CTF** — Use `/results` for final standings; manually unfreeze via CTFd admin or the `freeze_scoreboard.py` script in CTFd-scripts
 
