@@ -8,8 +8,19 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   </head>
   <body>
-    <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo">
-    <div class="container">
+    <!-- Last-hour full-screen overlay (hidden by default) -->
+    <div id="final-countdown" style="display:none; position:fixed; inset:0; z-index:9999; background:#0a0a0f; flex-direction:column; justify-content:center; align-items:center;">
+      <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo">
+      <p style="font-family:'Orbitron',monospace; font-weight:900; font-size:clamp(1.5em,3vw,3em); color:#ff5555; text-shadow:0 0 20px rgba(255,85,85,0.6); margin:0.5em 0; animation:pulse-glow-red 1.5s infinite;">FINAL COUNTDOWN</p>
+      <div id="finalclock" style="display:flex; justify-content:center; gap:clamp(10px,1.5vw,30px); font-size:clamp(3em,6vw,8em);">
+        <div style="display:flex;flex-direction:column;align-items:center;"><span class="minutes" style="font-family:'Orbitron',monospace;font-weight:900;color:#ff5555;text-shadow:0 0 15px rgba(255,85,85,0.6);"></span><div class="smalltext">Min</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;"><span class="seconds" style="font-family:'Orbitron',monospace;font-weight:900;color:#ff5555;text-shadow:0 0 15px rgba(255,85,85,0.6);"></span><div class="smalltext">Sec</div></div>
+      </div>
+    </div>
+    <style>@keyframes pulse-glow-red { 0%,100%{text-shadow:0 0 10px rgba(255,85,85,0.4);} 50%{text-shadow:0 0 30px rgba(255,85,85,0.8),0 0 60px rgba(255,85,85,0.3);} }</style>
+
+    <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo" id="main-logo">
+    <div class="container" id="main-container">
       <div class="column">
         <p class="column-header">Scoreboard</p>
         <img id="loading" src="{{ url_for('static', filename='images/loading.svg') }}">
@@ -252,6 +263,33 @@ function initializeClock(id, endtime) {
 
 var deadline = '{{ deadline }}';
 initializeClock('clockdiv', deadline);
+
+// Last-hour takeover
+function checkFinalCountdown() {
+  var t = Date.parse(deadline) - Date.parse(new Date());
+  if (t > 0 && t <= 3600000) {
+    document.getElementById('main-logo').style.display = 'none';
+    document.getElementById('main-container').style.display = 'none';
+    var overlay = document.getElementById('final-countdown');
+    overlay.style.display = 'flex';
+    var fc = document.getElementById('finalclock');
+    var mSpan = fc.querySelector('.minutes');
+    var sSpan = fc.querySelector('.seconds');
+    function updateFinal() {
+      var rem = Date.parse(deadline) - Date.parse(new Date());
+      if (rem <= 0) { location.reload(); return; }
+      var m = Math.floor((rem / 60000) % 60);
+      var s = Math.floor((rem / 1000) % 60);
+      mSpan.innerHTML = ('0' + m).slice(-2);
+      sSpan.innerHTML = ('0' + s).slice(-2);
+    }
+    updateFinal();
+    setInterval(updateFinal, 1000);
+  } else {
+    setTimeout(checkFinalCountdown, 30000);
+  }
+}
+checkFinalCountdown();
 
 // Trend Graph
 var trendColors = [
