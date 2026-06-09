@@ -9,7 +9,7 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 - Pre-CTF waiting page with large countdown and registration information
 - Real-time scoreboard (top 15 teams) with auto-scroll and periodic refresh
 - Countdown timer to CTF end
-- Last-hour full-screen countdown takeover (red "FINAL COUNTDOWN" overlay)
+- Last-hour full-screen "FINAL COUNTDOWN" takeover (themed per active theme)
 - Automatic CTFd scoreboard freeze when <1 hour remains (hides scores from participants)
 - Score trend graph (top 10 teams over time)
 - Auto-rolling announcements from CTFd notifications (large font for big screens)
@@ -51,6 +51,7 @@ export CTF_DEADLINE="June 18 2026 16:00:00 GMT-0600"
 export CTF_TITLE="FIRST CTF 2026"
 export CTF_REGISTRATION_URL="https://ctf.firstseclounge.org"
 export CTF_REGISTRATION_CODE="!chackers_2026!"
+export CTF_THEME=80s
 
 python app.py
 ```
@@ -76,6 +77,7 @@ docker run -p 8888:80 -d \
   -e CTF_TITLE="FIRST CTF 2026" \
   -e CTF_REGISTRATION_URL="https://ctf.firstseclounge.org" \
   -e CTF_REGISTRATION_CODE="!chackers_2026!" \
+  -e CTF_THEME=80s \
   --name scoreboard \
   scoreboard
 ```
@@ -91,7 +93,7 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
   sudo docker build -t scoreboard . &&
   sudo docker stop scoreboard &&
   sudo docker rm scoreboard &&
-  sudo docker run -p 8888:80 -d --name scoreboard 
+  sudo docker run -p 8888:80 -d --name scoreboard \
     -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
     -e CTFD_API_KEY=ctfd_xxxxxxxxxxxx \
     -e "CTF_START=June 15 2026 10:00:00 GMT-0600" \
@@ -99,6 +101,7 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
     -e "CTF_TITLE=FIRST CTF 2026" \
     -e CTF_REGISTRATION_URL=https://ctf.firstseclounge.org \
     -e "CTF_REGISTRATION_CODE=!chackers_2026!" \
+    -e CTF_THEME=80s \
     scoreboard'
 ```
 
@@ -128,7 +131,7 @@ The scoreboard adapts automatically based on time:
 
 1. **Before CTF start** — `/` redirects to the waiting page matching `CTF_THEME`
 2. **During CTF** — `/` redirects to the scoreboard matching `CTF_THEME`
-3. **Last hour** — Scoreboard page switches to a full-screen red "FINAL COUNTDOWN" overlay; a background thread automatically freezes CTFd scores (`score_visibility → admins`)
+3. **Last hour** — Scoreboard page switches to a full-screen themed "FINAL COUNTDOWN" overlay; a background thread automatically freezes CTFd scores (`score_visibility → admins`)
 4. **After CTF** — Use `/results` for final standings; manually unfreeze via CTFd admin or the `freeze_scoreboard.py` script in CTFd-scripts
 
 ## Themes
