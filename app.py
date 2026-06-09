@@ -165,6 +165,18 @@ def waiting():
                            registration_url=CTF_REGISTRATION_URL,
                            registration_code=CTF_REGISTRATION_CODE)
 
+@app.route('/waiting90')
+def waiting90():
+    return render_template('waiting-90s.html', start=CTF_START, title=CTF_TITLE,
+                           registration_url=CTF_REGISTRATION_URL,
+                           registration_code=CTF_REGISTRATION_CODE)
+
+@app.route('/waiting80')
+def waiting80():
+    return render_template('waiting-80s.html', start=CTF_START, title=CTF_TITLE,
+                           registration_url=CTF_REGISTRATION_URL,
+                           registration_code=CTF_REGISTRATION_CODE)
+
 # --- Scoreboard freeze logic ---
 def freeze_ctfd_scoreboard():
     """Hide scores from participants via CTFd API."""

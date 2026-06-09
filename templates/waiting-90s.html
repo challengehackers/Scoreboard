@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} — Starting Soon</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style-90s.css') }}">
+    <style>
+      body { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+      .waiting-top { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+      .waiting-bottom { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; padding: 2em; }
+      .waiting-title { font-family: 'Press Start 2P', monospace; font-size: clamp(1em, 2.5vw, 2.5em); color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff; margin-bottom: 0.8em; text-align: center; }
+      .waiting-clock { font-size: clamp(2em, 4vw, 5em); }
+      .waiting-clock > div { min-width: 4em; }
+      .waiting-clock div > span { font-size: 1.2em; }
+      .registration-box { border: 2px solid #ff00ff; background: rgba(0,0,0,0.8); padding: 1.5em 3em; text-align: center; max-width: 700px; box-shadow: 0 0 15px rgba(255,0,255,0.3); }
+      .registration-box h2 { font-family: 'Press Start 2P', monospace; color: #ffff00; font-size: clamp(0.6em, 1.2vw, 1.2em); margin: 0 0 0.8em 0; text-shadow: 0 0 8px #ffff00; }
+      .registration-box p { color: #00ff00; font-size: clamp(0.9em, 1.2vw, 1.3em); margin: 0.5em 0; }
+      .registration-box a { color: #00ffff; text-decoration: none; text-shadow: 0 0 5px #00ffff; }
+      .registration-box a:hover { text-decoration: underline; }
+      .registration-code { font-family: 'Courier New', monospace; color: #ff00ff; background: rgba(255,0,255,0.1); padding: 0.2em 0.6em; border: 1px solid #ff00ff; box-shadow: 0 0 5px rgba(255,0,255,0.3); }
+    </style>
+  </head>
+  <body>
+    <div class="waiting-top">
+      <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo">
+      <p class="waiting-title">CTF Starts In</p>
+      <div id="clockdiv" class="waiting-clock">
+        <div><span class="days"></span><div class="smalltext">Days</div></div>
+        <div><span class="hours"></span><div class="smalltext">Hours</div></div>
+        <div><span class="minutes"></span><div class="smalltext">Minutes</div></div>
+        <div><span class="seconds"></span><div class="smalltext">Seconds</div></div>
+      </div>
+    </div>
+    <div class="waiting-bottom">
+      <div class="registration-box">
+        <h2>Registration</h2>
+        <p>Register your team at <a href="{{ registration_url }}">{{ registration_url }}</a></p>
+        {% if registration_code %}
+        <p>Registration code: <span class="registration-code">{{ registration_code }}</span></p>
+        {% endif %}
+      </div>
+    </div>
+    <footer>FIRST SIG SecLounge</footer>
+
+    <script>
+      function getTimeRemaining(endtime) {
+        var t = Date.parse(endtime) - Date.parse(new Date());
+        var seconds = Math.floor((t / 1000) % 60);
+        var minutes = Math.floor((t / 1000 / 60) % 60);
+        var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+        var days = Math.floor(t / (1000 * 60 * 60 * 24));
+        return { 'total': t, 'days': days, 'hours': hours, 'minutes': minutes, 'seconds': seconds };
+      }
+      function initializeClock(id, endtime) {
+        var clock = document.getElementById(id);
+        var daysSpan = clock.querySelector('.days');
+        var hoursSpan = clock.querySelector('.hours');
+        var minutesSpan = clock.querySelector('.minutes');
+        var secondsSpan = clock.querySelector('.seconds');
+        function updateClock() {
+          var t = getTimeRemaining(endtime);
+          if (t.total <= 0) { location.reload(); return; }
+          daysSpan.innerHTML = t.days;
+          hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+          minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+          secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+      }
+      initializeClock('clockdiv', '{{ start }}');
+    </script>
+  </body>
+</html>

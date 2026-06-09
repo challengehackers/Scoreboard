@@ -108,7 +108,9 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
 | Path             | Description                                                          |
 |------------------|----------------------------------------------------------------------|
 | `/`              | Smart redirect: `/waiting` before CTF start, `/scoreboard` after     |
-| `/waiting`       | Pre-CTF page: large countdown + registration info                    |
+| `/waiting`       | Pre-CTF page: large countdown + registration info (neon hacker)      |
+| `/waiting90`     | Pre-CTF page — 90s retro theme                                      |
+| `/waiting80`     | Pre-CTF page — 80s TRS-80 theme                                     |
 | `/scoreboard`    | Main display — neon hacker theme                                     |
 | `/scoreboard90`  | 90s retro theme (multi-color, blink)                                 |
 | `/scoreboard80`  | 80s TRS-80 theme (monochrome green CRT)                              |
