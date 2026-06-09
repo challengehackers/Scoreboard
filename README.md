@@ -6,8 +6,11 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 
 ## Features
 
+- Pre-CTF waiting page with large countdown and registration information
 - Real-time scoreboard (top 15 teams) with auto-scroll and periodic refresh
 - Countdown timer to CTF end
+- Last-hour full-screen countdown takeover (red "FINAL COUNTDOWN" overlay)
+- Automatic CTFd scoreboard freeze when <1 hour remains (hides scores from participants)
 - Score trend graph (top 10 teams over time)
 - Auto-rolling announcements from CTFd notifications (large font for big screens)
 - Latest submissions feed (optimised font size for large displays)
@@ -19,12 +22,17 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 
 All parameters are configured via environment variables:
 
-| Variable         | Description                        | Default                                          |
-|------------------|------------------------------------|--------------------------------------------------|
-| `CTFD_BASE_URL`  | CTFd API base URL                  | `https://ctf.firstseclounge.org/api/v1`          |
-| `CTFD_API_KEY`   | CTFd API token (optional)          | *(empty)*                                        |
-| `CTF_DEADLINE`   | Countdown end date                 | `December 12 2025 16:00:00 GMT+0100`             |
-| `CTF_TITLE`      | Title displayed on the scoreboard  | `FIRST CTF 2025`                                 |
+| Variable                | Description                              | Default                                     |
+|-------------------------|------------------------------------------|---------------------------------------------|
+| `CTFD_BASE_URL`         | CTFd API base URL                        | `https://ctf.firstseclounge.org/api/v1`     |
+| `CTFD_API_KEY`          | CTFd API token (required for freeze)     | *(empty)*                                   |
+| `CTF_START`             | CTF start date (waiting page countdown)  | `June 15 2026 10:00:00 GMT-0600`            |
+| `CTF_DEADLINE`          | CTF end date (scoreboard countdown)      | `June 18 2026 16:00:00 GMT-0600`            |
+| `CTF_TITLE`             | Title displayed on the scoreboard        | `FIRST CTF 2026`                            |
+| `CTF_REGISTRATION_URL`  | Registration URL shown on waiting page   | `https://ctf.firstseclounge.org`            |
+| `CTF_REGISTRATION_CODE` | Registration code shown on waiting page  | `!chackers_2026!`                           |
+
+> **⚠️ Security note:** Never commit API keys. Pass `CTFD_API_KEY` via environment variable at runtime.
 
 ## Local setup
 
@@ -37,8 +45,11 @@ pip install -r requirements.txt
 
 export CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1
 export CTFD_API_KEY=ctfd_xxxxxxxxxxxx
-export CTF_DEADLINE="June 25 2026 17:00:00 GMT+0200"
+export CTF_START="June 15 2026 10:00:00 GMT-0600"
+export CTF_DEADLINE="June 18 2026 16:00:00 GMT-0600"
 export CTF_TITLE="FIRST CTF 2026"
+export CTF_REGISTRATION_URL="https://ctf.firstseclounge.org"
+export CTF_REGISTRATION_CODE="!chackers_2026!"
 
 python app.py
 ```
@@ -59,8 +70,11 @@ Run the container:
 docker run -p 8888:80 -d \
   -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
   -e CTFD_API_KEY=ctfd_xxxxxxxxxxxx \
-  -e CTF_DEADLINE="June 25 2026 17:00:00 GMT+0200" \
+  -e CTF_START="June 15 2026 10:00:00 GMT-0600" \
+  -e CTF_DEADLINE="June 18 2026 16:00:00 GMT-0600" \
   -e CTF_TITLE="FIRST CTF 2026" \
+  -e CTF_REGISTRATION_URL="https://ctf.firstseclounge.org" \
+  -e CTF_REGISTRATION_CODE="!chackers_2026!" \
   --name scoreboard \
   scoreboard
 ```
@@ -78,25 +92,39 @@ ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
   sudo docker rm scoreboard && \
   sudo docker run -p 8888:80 -d --name scoreboard \
     -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
+    -e CTFD_API_KEY=ctfd_xxxxxxxxxxxx \
+    -e CTF_START='June 15 2026 10:00:00 GMT-0600' \
     -e CTF_DEADLINE='June 18 2026 16:00:00 GMT-0600' \
     -e CTF_TITLE='FIRST CTF 2026' \
+    -e CTF_REGISTRATION_URL='https://ctf.firstseclounge.org' \
+    -e CTF_REGISTRATION_CODE='!chackers_2026!' \
     scoreboard"
 ```
 
 ## Routes
 
-| Path             | Description                              |
-|------------------|------------------------------------------|
-| `/`              | Redirects to `/scoreboard`               |
-| `/scoreboard`    | Main display — neon hacker theme         |
-| `/scoreboard90`  | 90s retro theme (multi-color, blink)     |
-| `/scoreboard80`  | 80s TRS-80 theme (monochrome green CRT)  |
-| `/data`          | Team rankings (loaded via AJAX)          |
-| `/latest`        | Latest submissions (loaded via AJAX)     |
-| `/trenddata`     | Score trend JSON for Chart.js            |
-| `/notifications` | CTFd announcements (loaded via AJAX)     |
-| `/timer`         | Standalone countdown page                |
-| `/results`       | Final results page                       |
+| Path             | Description                                                          |
+|------------------|----------------------------------------------------------------------|
+| `/`              | Smart redirect: `/waiting` before CTF start, `/scoreboard` after     |
+| `/waiting`       | Pre-CTF page: large countdown + registration info                    |
+| `/scoreboard`    | Main display — neon hacker theme                                     |
+| `/scoreboard90`  | 90s retro theme (multi-color, blink)                                 |
+| `/scoreboard80`  | 80s TRS-80 theme (monochrome green CRT)                              |
+| `/data`          | Team rankings (loaded via AJAX)                                      |
+| `/latest`        | Latest submissions (loaded via AJAX)                                 |
+| `/trenddata`     | Score trend JSON for Chart.js                                        |
+| `/notifications` | CTFd announcements (loaded via AJAX)                                 |
+| `/timer`         | Standalone countdown page                                            |
+| `/results`       | Final results page                                                   |
+
+## Lifecycle
+
+The scoreboard adapts automatically based on time:
+
+1. **Before CTF start** — `/` redirects to `/waiting` (big countdown + registration details)
+2. **During CTF** — `/` redirects to `/scoreboard` (live scores, trend graph, submissions)
+3. **Last hour** — Scoreboard page switches to a full-screen red "FINAL COUNTDOWN" overlay; a background thread automatically freezes CTFd scores (`score_visibility → admins`)
+4. **After CTF** — Use `/results` for final standings; manually unfreeze via CTFd admin or the `freeze_scoreboard.py` script in CTFd-scripts
 
 ## Themes
 
