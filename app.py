@@ -2,12 +2,16 @@
 # Forked and updated by FIRST SecLounge SIG
 # Version 2025-11-21 
 
-import requests, time
+import requests, time, threading
+from datetime import datetime, timezone
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
 from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE
 
 app = Flask(__name__)
+
+# Scoreboard freeze state
+_scoreboard_frozen = False
 
 def get_headers():
     headers = {'User-Agent': 'SIG SecLounge Scoreboard'}
@@ -17,8 +21,6 @@ def get_headers():
 
 @app.route('/')
 def index():
-    from datetime import datetime, timezone
-    # Parse CTF_START and redirect to waiting page if CTF hasn't started
     try:
         start = datetime.strptime(CTF_START, '%B %d %Y %H:%M:%S GMT%z')
         if datetime.now(timezone.utc) < start:
@@ -162,6 +164,43 @@ def waiting():
     return render_template('waiting.html', start=CTF_START, title=CTF_TITLE,
                            registration_url=CTF_REGISTRATION_URL,
                            registration_code=CTF_REGISTRATION_CODE)
+
+# --- Scoreboard freeze logic ---
+def freeze_ctfd_scoreboard():
+    """Hide scores from participants via CTFd API."""
+    global _scoreboard_frozen
+    if _scoreboard_frozen or not API_KEY:
+        return
+    try:
+        url = BASEURL.replace('/api/v1', '') + '/api/v1/configs'
+        headers = {'Authorization': f'Token {API_KEY}', 'Content-Type': 'application/json'}
+        r = requests.patch(url, json={'score_visibility': 'admins'}, headers=headers, timeout=10)
+        r.raise_for_status()
+        _scoreboard_frozen = True
+        print('[!] Scoreboard frozen — score_visibility set to admins')
+    except Exception as e:
+        print(f'[!] Failed to freeze scoreboard: {e}')
+
+
+def _freeze_check_loop():
+    """Background thread: freeze CTFd scoreboard when <1h remains."""
+    import time as _time
+    while True:
+        try:
+            end = datetime.strptime(CTF_DEADLINE, '%B %d %Y %H:%M:%S GMT%z')
+            remaining = (end - datetime.now(timezone.utc)).total_seconds()
+            if 0 < remaining <= 3600:
+                freeze_ctfd_scoreboard()
+                return
+            if remaining <= 0:
+                return
+        except Exception:
+            pass
+        _time.sleep(60)
+
+
+threading.Thread(target=_freeze_check_loop, daemon=True).start()
+
 
 def create_app():
     return app
