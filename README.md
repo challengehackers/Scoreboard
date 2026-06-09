@@ -30,7 +30,7 @@ All parameters are configured via environment variables:
 | `CTF_DEADLINE`          | CTF end date (scoreboard countdown)      | `June 18 2026 16:00:00 GMT-0600`            |
 | `CTF_TITLE`             | Title displayed on the scoreboard        | `FIRST CTF 2026`                            |
 | `CTF_REGISTRATION_URL`  | Registration URL shown on waiting page   | `https://ctf.firstseclounge.org`            |
-| `CTF_REGISTRATION_CODE` | Registration code shown on waiting page  | `!chackers_2026!`                           |
+| `CTF_REGISTRATION_CODE` | Registration code shown on waiting page  | *(empty)*                                   |
 
 > **⚠️ Security note:** Never commit API keys. Pass `CTFD_API_KEY` via environment variable at runtime.
 
@@ -81,25 +81,27 @@ docker run -p 8888:80 -d \
 
 ## Deployment (scoreboard.ctfsig.org)
 
-The scoreboard runs as a Docker container on the CTF infrastructure. To redeploy:
+The scoreboard runs as a Docker container on `first-ctf-01.ctfsig.org` (145.239.10.190). To redeploy:
 
 ```bash
-rsync -avz --exclude='env/' --exclude='__pycache__/' --exclude='.git/' ./ ubuntu@scoreboard.ctfsig.org:/home/ubuntu/Scoreboard/
+rsync -avz --exclude='env/' --exclude='__pycache__/' --exclude='.git/' ./ ubuntu@first-ctf-01.ctfsig.org:/home/ubuntu/Scoreboard/
 
-ssh ubuntu@scoreboard.ctfsig.org "cd /home/ubuntu/Scoreboard && \
-  sudo docker build -t scoreboard . && \
-  sudo docker stop scoreboard && \
-  sudo docker rm scoreboard && \
-  sudo docker run -p 8888:80 -d --name scoreboard \
+ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
+  sudo docker build -t scoreboard . &&
+  sudo docker stop scoreboard &&
+  sudo docker rm scoreboard &&
+  sudo docker run -p 8888:80 -d --name scoreboard 
     -e CTFD_BASE_URL=https://ctf.firstseclounge.org/api/v1 \
     -e CTFD_API_KEY=ctfd_xxxxxxxxxxxx \
-    -e CTF_START='June 15 2026 10:00:00 GMT-0600' \
-    -e CTF_DEADLINE='June 18 2026 16:00:00 GMT-0600' \
-    -e CTF_TITLE='FIRST CTF 2026' \
-    -e CTF_REGISTRATION_URL='https://ctf.firstseclounge.org' \
-    -e CTF_REGISTRATION_CODE='!chackers_2026!' \
-    scoreboard"
+    -e "CTF_START=June 15 2026 10:00:00 GMT-0600" \
+    -e "CTF_DEADLINE=June 18 2026 16:00:00 GMT-0600" \
+    -e "CTF_TITLE=FIRST CTF 2026" \
+    -e CTF_REGISTRATION_URL=https://ctf.firstseclounge.org \
+    -e "CTF_REGISTRATION_CODE=!chackers_2026!" \
+    scoreboard'
 ```
+
+> **Note:** The outer single quotes prevent zsh from interpreting `!` as history expansion.
 
 ## Routes
 
