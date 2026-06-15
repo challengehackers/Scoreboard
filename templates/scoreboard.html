@@ -67,7 +67,8 @@
     <script>
 
 // Configurations
-var refreshDelay = 120 * 1000;
+var refreshDelay = 60 * 1000;
+var trendRefreshDelay = 120 * 1000;
 var latestSubmissionDelay = 10 * 1000;
 var autoScrollDelay = 50; // scroll speed, smaller faster
 var autoScrollStartDelay = 4 * 1000; // delay start of auto scroll
@@ -169,31 +170,26 @@ function loopScroll() {
 
 }
 
-// Refresh Page
-function refresh() {
-  location.reload();
-}
+// Auto-scroll started flag
+var autoScrollStarted = false;
 
-// Refresh Animations
-function refreshInitiate() {
-  scoreboardJQ.fadeOut();
-  latestSubmissionsJQ.fadeOut();
-  setTimeout(refresh, 1000);
-}
-
-// Scoreboard Updater - Entry for other scoreboard-related functions
+// Scoreboard Updater - AJAX refresh without page reload
 function scoreboardUpdater() {
-  $.get('{{ url_for('data') }}', function(data) {
-    scoreboardJQ.hide().html(data).fadeIn();
-
-    // Loop Scrolling
-    loopScroll();
-
-    // Auto Scroller
-    setTimeout(autoScroll, autoScrollStartDelay);
-
-    // Auto Refresh
-    setTimeout(refreshInitiate, refreshDelay);
+  $.ajax({
+    url: '{{ url_for('data') }}',
+    type: 'get',
+    success: function(data) {
+      scoreboardJQ.html(data);
+      loopScroll();
+      if (!autoScrollStarted) {
+        autoScrollStarted = true;
+        setTimeout(autoScroll, autoScrollStartDelay);
+      }
+      setTimeout(scoreboardUpdater, refreshDelay);
+    },
+    error: function() {
+      setTimeout(scoreboardUpdater, refreshDelay);
+    }
   });
 }
 scoreboardUpdater();
@@ -297,6 +293,8 @@ var trendColors = [
   '#ffb86c', '#50fa7b', '#ff5555', '#6272a4', '#f8f8f2'
 ];
 
+var trendChart = null;
+
 function loadTrendGraph() {
   $.ajax({
     url: "{{ url_for('trenddata') }}",
@@ -316,8 +314,9 @@ function loadTrendGraph() {
         });
         i++;
       }
+      if (trendChart) { trendChart.destroy(); }
       var ctx = document.getElementById('trendCanvas').getContext('2d');
-      new Chart(ctx, {
+      trendChart = new Chart(ctx, {
         type: 'line',
         data: { datasets: datasets },
         options: {
@@ -341,6 +340,10 @@ function loadTrendGraph() {
           }
         }
       });
+      setTimeout(loadTrendGraph, trendRefreshDelay);
+    },
+    error: function() {
+      setTimeout(loadTrendGraph, trendRefreshDelay);
     },
     global: false
   });
