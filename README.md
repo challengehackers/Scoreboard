@@ -7,15 +7,16 @@ Live scoreboard for FIRST CTF events, featuring real-time score updates, countdo
 ## Features
 
 - Pre-CTF waiting page with large countdown and registration information
-- Real-time scoreboard (top 15 teams) with auto-scroll and periodic refresh
+- Real-time scoreboard (top 15 teams) with auto-scroll and AJAX auto-refresh
 - Countdown timer to CTF end
 - Last-hour full-screen "FINAL COUNTDOWN" takeover (themed per active theme)
 - Automatic CTFd scoreboard freeze when <1 hour remains (hides scores from participants)
-- Score trend graph (top 10 teams over time)
+- Score trend graph (top 10 teams over time) with periodic refresh
 - Auto-rolling announcements from CTFd notifications (large font for big screens)
 - Latest submissions feed (optimised font size for large displays)
 - Gold/silver/bronze podium styling for top 3
-- Multiple theme variants (neon hacker, 90s retro, 80s TRS-80)
+- Multiple theme variants (neon hacker, 90s retro, 80s TRS-80, 80s CRT)
+- Projector/beamer-optimised default 80s theme (high contrast, no flicker)
 - 4K / big screen display support with responsive clamp-based font sizing
 
 ## Configuration
@@ -117,7 +118,8 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
 | `/waiting80`     | Pre-CTF page — 80s TRS-80 theme                                     |
 | `/scoreboard`    | Main display — neon hacker theme                                     |
 | `/scoreboard90`  | 90s retro theme (multi-color, blink)                                 |
-| `/scoreboard80`  | 80s TRS-80 theme (monochrome green CRT)                              |
+| `/scoreboard80`  | 80s TRS-80 theme — projector/beamer optimised (high contrast)        |
+| `/scoreboard80crt` | 80s TRS-80 theme — original CRT (vignette, flicker, scanlines)    |
 | `/data`          | Team rankings (loaded via AJAX)                                      |
 | `/latest`        | Latest submissions (loaded via AJAX)                                 |
 | `/trenddata`     | Score trend JSON for Chart.js                                        |
@@ -136,18 +138,20 @@ The scoreboard adapts automatically based on time:
 
 ## Themes
 
-Three visual themes are available, each accessible via its own route:
+Four visual themes are available, each accessible via its own route:
 
 | Theme | Route | Description |
 |-------|-------|-------------|
-| Neon Hacker | `/scoreboard` | Default — dark background, green neon accents, Orbitron + Fira Code fonts |
+| Neon Hacker | `/scoreboard` | Dark background, green neon accents, Orbitron + Fira Code fonts |
 | 90s Retro | `/scoreboard90` | Black background, multi-color neon (green/cyan/yellow/red), Press Start 2P font, scanlines |
-| 80s TRS-80 | `/scoreboard80` | Monochrome green phosphor CRT, VT323 font, vignette, flicker, inspired by TRS-80 Model II |
+| 80s TRS-80 | `/scoreboard80` | **Default** — Projector-optimised high-contrast monochrome green, VT323 font, no flicker |
+| 80s TRS-80 CRT | `/scoreboard80crt` | Original CRT look — vignette, flicker, heavy scanlines (best on monitors in dark rooms) |
 
 Theme files:
 - `static/css/style.css` — Neon Hacker
 - `static/css/style-90s.css` — 90s Retro
-- `static/css/style-80s.css` — 80s TRS-80
+- `static/css/style-80s.css` — 80s TRS-80 (projector-friendly)
+- `static/css/style-80s-crt.css` — 80s TRS-80 CRT (original)
 
 ## Tech stack
 

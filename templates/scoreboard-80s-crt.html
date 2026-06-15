@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Scoreboard | {{ title }}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style-80s-crt.css') }}">
+  </head>
+  <body>
+    <!-- Last-hour full-screen overlay (hidden by default) -->
+    <div id="final-countdown" style="display:none; position:fixed; inset:0; z-index:9999; background:#0a0a0a; flex-direction:column; justify-content:center; align-items:center;">
+      <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo">
+      <p style="font-family:'VT323',monospace; font-size:clamp(2em,4vw,4em); color:#33ff33; text-shadow:0 0 8px #33ff33,0 0 16px rgba(51,255,51,0.4); margin:0.5em 0; animation:pulse-80s 2s infinite; text-transform:uppercase;">FINAL COUNTDOWN</p>
+      <div id="finalclock" style="display:flex; justify-content:center; gap:clamp(10px,1.5vw,30px); font-size:clamp(3em,6vw,8em);">
+        <div style="display:flex;flex-direction:column;align-items:center;"><span class="minutes" style="font-family:'VT323',monospace;color:#33ff33;text-shadow:0 0 10px #33ff33;"></span><div class="smalltext">Min</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;"><span class="seconds" style="font-family:'VT323',monospace;color:#33ff33;text-shadow:0 0 10px #33ff33;"></span><div class="smalltext">Sec</div></div>
+      </div>
+    </div>
+    <style>@keyframes pulse-80s { 0%,100%{text-shadow:0 0 8px #33ff33;} 50%{text-shadow:0 0 20px #33ff33,0 0 40px rgba(51,255,51,0.3);} }</style>
+
+    <img src="{{ url_for('static', filename='images/first-ctf.png') }}" alt="FIRST CTF" class="logo" id="main-logo">
+    <div class="container" id="main-container">
+      <div class="column">
+        <p class="column-header">Scoreboard</p>
+        <img id="loading" src="{{ url_for('static', filename='images/loading.svg') }}">
+        <div id="scoreboard" class="js-loop">{# Formatted scoreboard that will be pulled using Javascript #}</div>
+      </div>
+      <div class="column column-2">
+        <div>
+          <p class="column-header">Countdown</p>
+          <div id="clockdiv">
+            <div>
+              <span class="days"></span>
+              <div class="smalltext">Days</div>
+            </div>
+            <div>
+              <span class="hours"></span>
+              <div class="smalltext">Hours</div>
+            </div>
+            <div>
+              <span class="minutes"></span>
+              <div class="smalltext">Minutes</div>
+            </div>
+            <div>
+              <span class="seconds"></span>
+              <div class="smalltext">Seconds</div>
+            </div>
+          </div>
+        </div>
+        <div id="trendgraph">
+          <p class="column-header">Score Trend</p>
+          <canvas id="trendCanvas"></canvas>
+        </div>
+        <div id="latest"></div>
+        <div id="notifications-box">
+          <p class="column-header">Announcements</p>
+          <div id="notifications-content"></div>
+        </div>
+      </div>
+    </div>
+    <footer>FIRST SIG SecLounge</footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script>
+
+// Configurations
+var refreshDelay = 60 * 1000;
+var trendRefreshDelay = 120 * 1000;
+var latestSubmissionDelay = 10 * 1000;
+var autoScrollDelay = 50; // scroll speed, smaller faster
+var autoScrollStartDelay = 4 * 1000; // delay start of auto scroll
+var loopBottomOffset = 40; // prevents flickering
+
+// Scoreboard Variables
+var scoreboard = document.getElementById('scoreboard');
+var scoreboardJQ = $('#scoreboard');
+var latestSubmissionsJQ = $('#latest');
+
+// AJAX Loading Spinner
+var loading = $('#loading').hide();
+$(document)
+  .ajaxStart(function () {
+    loading.show();
+  })
+  .ajaxStop(function () {
+    loading.hide();
+  });
+
+// Auto Scroll Function
+function autoScroll() {
+  scoreboard.scrollBy(0, 1);
+  setTimeout(autoScroll, autoScrollDelay);
+}
+
+// Loop Scroll Functions
+function loopScroll() {
+
+  var doc = window.document,
+    context = doc.querySelector('.js-loop'),
+    clones = context.querySelectorAll('.is-clone'),
+    disableScroll = false,
+    scrollHeight = 0,
+    scrollPos = 0,
+    clonesHeight = 0,
+    i = 0;
+
+  function getScrollPos () {
+    return (context.pageYOffset || context.scrollTop) - (context.clientTop || 0);
+  }
+
+  function setScrollPos (pos) {
+    context.scrollTop = pos;
+  }
+
+  function getClonesHeight () {
+    clonesHeight = 0;
+
+    for (i = 0; i < clones.length; i += 1) {
+      clonesHeight = clonesHeight + clones[i].offsetHeight;
+    }
+
+    return clonesHeight;
+  }
+
+  function reCalc () {
+    scrollPos = getScrollPos();
+    scrollHeight = context.scrollHeight;
+    clonesHeight = getClonesHeight();
+
+    if (scrollPos <= 0) {
+      setScrollPos(1);
+    }
+  }
+
+  function scrollUpdate () {
+    if (!disableScroll) {
+      scrollPos = getScrollPos();
+
+      if (clonesHeight + scrollPos >= scrollHeight - loopBottomOffset) {
+        // Scroll to the top when reached the bottom
+        setScrollPos(1);
+        disableScroll = true;
+      } else if (scrollPos <= 0) {
+        // Scroll to the bottom when reached the top
+        setScrollPos(scrollHeight - clonesHeight);
+        disableScroll = true;
+      }
+    }
+
+    if (disableScroll) {
+      // Disable scroll-jumping for a short time to avoid flickering
+      window.setTimeout(function () {
+        disableScroll = false;
+      }, 40);
+    }
+  }
+
+  window.requestAnimationFrame(reCalc);
+
+  context.addEventListener('scroll', function () {
+    window.requestAnimationFrame(scrollUpdate);
+  }, false);
+
+  window.addEventListener('resize', function () {
+    window.requestAnimationFrame(reCalc);
+  }, false);
+
+}
+
+// Auto-scroll started flag
+var autoScrollStarted = false;
+
+// Scoreboard Updater - AJAX refresh without page reload
+function scoreboardUpdater() {
+  $.ajax({
+    url: '{{ url_for('data') }}',
+    type: 'get',
+    success: function(data) {
+      scoreboardJQ.html(data);
+      loopScroll();
+      if (!autoScrollStarted) {
+        autoScrollStarted = true;
+        setTimeout(autoScroll, autoScrollStartDelay);
+      }
+      setTimeout(scoreboardUpdater, refreshDelay);
+    },
+    error: function() {
+      setTimeout(scoreboardUpdater, refreshDelay);
+    }
+  });
+}
+scoreboardUpdater();
+
+function latestSubmissionsUpdater() {
+  $.ajax({
+    url: "{{ url_for('latest') }}",
+    type: "get",
+    success: function(data){
+        latestSubmissionsJQ.html(data);
+        setTimeout(latestSubmissionsUpdater, latestSubmissionDelay);
+    }, 
+    global: false
+  });
+}
+function latestSubmissionUpdaterFirst() {
+  $.ajax({
+    url: "{{ url_for('latest') }}",
+    type: "get",
+    success: function(data){
+        latestSubmissionsJQ.hide().html(data).fadeIn();
+        setTimeout(latestSubmissionsUpdater, latestSubmissionDelay);
+    }, 
+    global: false
+  });
+}
+latestSubmissionUpdaterFirst();
+
+function getTimeRemaining(endtime) {
+  var t = Date.parse(endtime) - Date.parse(new Date());
+  var seconds = Math.floor((t / 1000) % 60);
+  var minutes = Math.floor((t / 1000 / 60) % 60);
+  var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+  var days = Math.floor(t / (1000 * 60 * 60 * 24));
+  return {
+    'total': t,
+    'days': days,
+    'hours': hours,
+    'minutes': minutes,
+    'seconds': seconds
+  };
+}
+
+function initializeClock(id, endtime) {
+  var clock = document.getElementById(id);
+  var daysSpan = clock.querySelector('.days');
+  var hoursSpan = clock.querySelector('.hours');
+  var minutesSpan = clock.querySelector('.minutes');
+  var secondsSpan = clock.querySelector('.seconds');
+
+  function updateClock() {
+    var t = getTimeRemaining(endtime);
+
+    daysSpan.innerHTML = t.days;
+    hoursSpan.innerHTML = ('0' + t.hours).slice(-2);
+    minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+    secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+    if (t.total <= 0) {
+      clearInterval(timeinterval);
+    }
+  }
+
+  updateClock();
+  var timeinterval = setInterval(updateClock, 1000);
+}
+
+var deadline = '{{ deadline }}';
+initializeClock('clockdiv', deadline);
+
+// Last-hour takeover
+function checkFinalCountdown() {
+  var t = Date.parse(deadline) - Date.parse(new Date());
+  if (t > 0 && t <= 3600000) {
+    document.getElementById('main-logo').style.display = 'none';
+    document.getElementById('main-container').style.display = 'none';
+    var overlay = document.getElementById('final-countdown');
+    overlay.style.display = 'flex';
+    var fc = document.getElementById('finalclock');
+    var mSpan = fc.querySelector('.minutes');
+    var sSpan = fc.querySelector('.seconds');
+    function updateFinal() {
+      var rem = Date.parse(deadline) - Date.parse(new Date());
+      if (rem <= 0) { location.reload(); return; }
+      var m = Math.floor((rem / 60000) % 60);
+      var s = Math.floor((rem / 1000) % 60);
+      mSpan.innerHTML = ('0' + m).slice(-2);
+      sSpan.innerHTML = ('0' + s).slice(-2);
+    }
+    updateFinal();
+    setInterval(updateFinal, 1000);
+  } else {
+    setTimeout(checkFinalCountdown, 30000);
+  }
+}
+checkFinalCountdown();
+
+// Trend Graph
+var trendColors = [
+  '#33ff33', '#29cc29', '#1f991f', '#66ff66', '#99ff99',
+  '#44dd44', '#22aa22', '#55ee55', '#11bb11', '#77ff77'
+];
+
+var trendChart = null;
+
+function loadTrendGraph() {
+  $.ajax({
+    url: "{{ url_for('trenddata') }}",
+    type: "get",
+    success: function(data) {
+      var datasets = [];
+      var i = 0;
+      for (var team in data) {
+        datasets.push({
+          label: team,
+          data: data[team],
+          borderColor: trendColors[i % trendColors.length],
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.3
+        });
+        i++;
+      }
+      if (trendChart) { trendChart.destroy(); }
+      var ctx = document.getElementById('trendCanvas').getContext('2d');
+      trendChart = new Chart(ctx, {
+        type: 'line',
+        data: { datasets: datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'time',
+              ticks: { color: '#1a8c1a', maxTicksLimit: 5, font: { size: 12 } },
+              grid: { color: '#0d4d0d' }
+            },
+            y: {
+              ticks: { color: '#1a8c1a', font: { size: 12 } },
+              grid: { color: '#0d4d0d' }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: '#33ff33', boxWidth: 14, font: { size: 14 } }
+            }
+          }
+        }
+      });
+      setTimeout(loadTrendGraph, trendRefreshDelay);
+    },
+    error: function() {
+      setTimeout(loadTrendGraph, trendRefreshDelay);
+    },
+    global: false
+  });
+}
+loadTrendGraph();
+
+// Notifications
+var notificationsDelay = 30 * 1000;
+var notifScrollInterval = null;
+
+function loadNotifications() {
+  $.ajax({
+    url: "{{ url_for('notifications') }}",
+    type: "get",
+    success: function(data) {
+      var container = $('#notifications-content');
+      if (!data || data.length === 0) {
+        container.html('<div class="notif-item notif-empty">No announcements yet</div>');
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < data.length; i++) {
+        var n = data[i];
+        html += '<div class="notif-item">';
+        html += '<span class="notif-title">' + (n.title || '') + '</span>';
+        if (n.content) {
+          html += '<span class="notif-text">' + n.content + '</span>';
+        }
+        html += '</div>';
+      }
+      container.html(html);
+
+      // Auto-scroll notifications if content overflows
+      if (notifScrollInterval) clearInterval(notifScrollInterval);
+      var el = container[0];
+      if (el.scrollHeight > el.clientHeight) {
+        notifScrollInterval = setInterval(function() {
+          el.scrollTop += 1;
+          if (el.scrollTop >= el.scrollHeight - el.clientHeight) {
+            el.scrollTop = 0;
+          }
+        }, 80);
+      }
+    },
+    global: false
+  });
+  setTimeout(loadNotifications, notificationsDelay);
+}
+loadNotifications();
+
+    </script>
+  </body>
+</html>
