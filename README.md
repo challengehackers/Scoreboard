@@ -33,6 +33,7 @@ All parameters are configured via environment variables:
 | `CTF_REGISTRATION_URL`  | Registration URL shown on waiting page   | `https://ctf.firstseclounge.org`            |
 | `CTF_REGISTRATION_CODE` | Registration code shown on waiting page  | *(empty)*                                   |
 | `CTF_THEME`             | Active theme: `default`, `90s`, or `80s` | `80s`                                       |
+| `CTF_TZ_OFFSET`         | UTC offset (hours) for displayed times   | `-6` (Denver/MDT)                           |
 
 > **⚠️ Security note:** Never commit API keys. Pass `CTFD_API_KEY` via environment variable at runtime.
 
@@ -53,6 +54,7 @@ export CTF_TITLE="FIRST CTF 2026"
 export CTF_REGISTRATION_URL="https://ctf.firstseclounge.org"
 export CTF_REGISTRATION_CODE="!chackers_2026!"
 export CTF_THEME=80s
+export CTF_TZ_OFFSET=-6
 
 python app.py
 ```
@@ -79,6 +81,7 @@ docker run -p 8888:80 -d \
   -e CTF_REGISTRATION_URL="https://ctf.firstseclounge.org" \
   -e CTF_REGISTRATION_CODE="!chackers_2026!" \
   -e CTF_THEME=80s \
+  -e CTF_TZ_OFFSET=-6 \
   --name scoreboard \
   scoreboard
 ```
@@ -103,6 +106,7 @@ ssh ubuntu@first-ctf-01.ctfsig.org 'cd /home/ubuntu/Scoreboard &&
     -e CTF_REGISTRATION_URL=https://ctf.firstseclounge.org \
     -e "CTF_REGISTRATION_CODE=!chackers_2026!" \
     -e CTF_THEME=80s \
+    -e CTF_TZ_OFFSET=-6 \
     scoreboard'
 ```
 

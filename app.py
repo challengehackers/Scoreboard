@@ -3,10 +3,10 @@
 # Version 2025-11-21 
 
 import requests, time, threading
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from flask import Flask, url_for, redirect, render_template
 from pprint import pprint
-from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE, CTF_THEME
+from config import BASEURL, API_KEY, CTF_DEADLINE, CTF_START, CTF_TITLE, CTF_REGISTRATION_URL, CTF_REGISTRATION_CODE, CTF_THEME, CTF_TZ_OFFSET
 
 app = Flask(__name__)
 
@@ -43,7 +43,9 @@ class Latest():
         self.challname = challname
         self.challcat = challcat
         self.challpoints = challpoints
-        self.time = time.strftime('%H:%M', time.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ'))
+        utc_dt = datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+        local_dt = utc_dt + timedelta(hours=CTF_TZ_OFFSET)
+        self.time = local_dt.strftime('%H:%M')
 
 def getLatest():
     data = getData()

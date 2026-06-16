@@ -8,3 +8,4 @@ CTF_TITLE = os.environ.get('CTF_TITLE', 'FIRST CTF 2026')
 CTF_REGISTRATION_URL = os.environ.get('CTF_REGISTRATION_URL', 'https://ctf.firstseclounge.org')
 CTF_REGISTRATION_CODE = os.environ.get('CTF_REGISTRATION_CODE', '')
 CTF_THEME = os.environ.get('CTF_THEME', '80s')  # default, 90s, 80s
+CTF_TZ_OFFSET = int(os.environ.get('CTF_TZ_OFFSET', '-6'))  # UTC offset in hours
