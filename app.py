@@ -52,7 +52,7 @@ def getLatest():
     for team in data:
         for solve in team.solves:
             latestSolves.append(solve)
-    latestSolves = list(sorted(latestSolves, key=lambda x: x['date'], reverse=True))[:10]
+    latestSolves = list(sorted(latestSolves, key=lambda x: x['date'], reverse=True))[:20]
     finalData = []
     downloadedTeams = {}
 

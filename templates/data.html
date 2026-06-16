@@ -1,5 +1,6 @@
 {# Formatted Data For Scoreboard #}
 
+<div class="scroll-content">
 {% for team in teams %}
 <div class="team" style="animation-delay: {{ loop.index0 * 0.05 }}s">
   <div class="team-position">{{ team.position }}</div>
@@ -12,3 +13,18 @@
   <div class="team-score">{{ team.score }}</div>
 </div>
 {% endfor %}
+</div>
+<div class="scroll-content scroll-clone">
+{% for team in teams %}
+<div class="team" style="animation-delay: {{ loop.index0 * 0.05 }}s">
+  <div class="team-position">{{ team.position }}</div>
+  <div class="team-contents">
+    <div class="team-meta">
+      <div class="team-name">{{ team.name }}</div>
+      <div class="team-solved">{{ team.solved }} solved</div>
+    </div>
+  </div>
+  <div class="team-score">{{ team.score }}</div>
+</div>
+{% endfor %}
+</div>

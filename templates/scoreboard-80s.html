@@ -70,9 +70,7 @@
 var refreshDelay = 60 * 1000;
 var trendRefreshDelay = 120 * 1000;
 var latestSubmissionDelay = 10 * 1000;
-var autoScrollDelay = 50; // scroll speed, smaller faster
-var autoScrollStartDelay = 4 * 1000; // delay start of auto scroll
-var loopBottomOffset = 40; // prevents flickering
+var autoScrollDelay = 50; // scroll speed (ms per pixel), smaller = faster
 
 // Scoreboard Variables
 var scoreboard = document.getElementById('scoreboard');
@@ -89,89 +87,20 @@ $(document)
     loading.hide();
   });
 
-// Auto Scroll Function
-function autoScroll() {
-  scoreboard.scrollBy(0, 1);
-  setTimeout(autoScroll, autoScrollDelay);
+// Continuous rolling scroll for scoreboard
+var scoreboardScrollInterval = null;
+
+function startScoreboardScroll() {
+  if (scoreboardScrollInterval) clearInterval(scoreboardScrollInterval);
+  var firstBlock = scoreboard.querySelector('.scroll-content');
+  if (!firstBlock || scoreboard.scrollHeight <= scoreboard.clientHeight) return;
+  scoreboardScrollInterval = setInterval(function() {
+    scoreboard.scrollTop += 1;
+    if (scoreboard.scrollTop >= firstBlock.offsetHeight) {
+      scoreboard.scrollTop = 0;
+    }
+  }, autoScrollDelay);
 }
-
-// Loop Scroll Functions
-function loopScroll() {
-
-  var doc = window.document,
-    context = doc.querySelector('.js-loop'),
-    clones = context.querySelectorAll('.is-clone'),
-    disableScroll = false,
-    scrollHeight = 0,
-    scrollPos = 0,
-    clonesHeight = 0,
-    i = 0;
-
-  function getScrollPos () {
-    return (context.pageYOffset || context.scrollTop) - (context.clientTop || 0);
-  }
-
-  function setScrollPos (pos) {
-    context.scrollTop = pos;
-  }
-
-  function getClonesHeight () {
-    clonesHeight = 0;
-
-    for (i = 0; i < clones.length; i += 1) {
-      clonesHeight = clonesHeight + clones[i].offsetHeight;
-    }
-
-    return clonesHeight;
-  }
-
-  function reCalc () {
-    scrollPos = getScrollPos();
-    scrollHeight = context.scrollHeight;
-    clonesHeight = getClonesHeight();
-
-    if (scrollPos <= 0) {
-      setScrollPos(1);
-    }
-  }
-
-  function scrollUpdate () {
-    if (!disableScroll) {
-      scrollPos = getScrollPos();
-
-      if (clonesHeight + scrollPos >= scrollHeight - loopBottomOffset) {
-        // Scroll to the top when reached the bottom
-        setScrollPos(1);
-        disableScroll = true;
-      } else if (scrollPos <= 0) {
-        // Scroll to the bottom when reached the top
-        setScrollPos(scrollHeight - clonesHeight);
-        disableScroll = true;
-      }
-    }
-
-    if (disableScroll) {
-      // Disable scroll-jumping for a short time to avoid flickering
-      window.setTimeout(function () {
-        disableScroll = false;
-      }, 40);
-    }
-  }
-
-  window.requestAnimationFrame(reCalc);
-
-  context.addEventListener('scroll', function () {
-    window.requestAnimationFrame(scrollUpdate);
-  }, false);
-
-  window.addEventListener('resize', function () {
-    window.requestAnimationFrame(reCalc);
-  }, false);
-
-}
-
-// Auto-scroll started flag
-var autoScrollStarted = false;
 
 // Scoreboard Updater - AJAX refresh without page reload
 function scoreboardUpdater() {
@@ -180,11 +109,7 @@ function scoreboardUpdater() {
     type: 'get',
     success: function(data) {
       scoreboardJQ.html(data);
-      loopScroll();
-      if (!autoScrollStarted) {
-        autoScrollStarted = true;
-        setTimeout(autoScroll, autoScrollStartDelay);
-      }
+      startScoreboardScroll();
       setTimeout(scoreboardUpdater, refreshDelay);
     },
     error: function() {
@@ -194,12 +119,29 @@ function scoreboardUpdater() {
 }
 scoreboardUpdater();
 
+// Continuous rolling scroll for latest solves
+var latestScrollInterval = null;
+
+function startLatestScroll() {
+  if (latestScrollInterval) clearInterval(latestScrollInterval);
+  var el = latestSubmissionsJQ[0];
+  var firstBlock = el.querySelector('.scroll-content');
+  if (!firstBlock || el.scrollHeight <= el.clientHeight) return;
+  latestScrollInterval = setInterval(function() {
+    el.scrollTop += 1;
+    if (el.scrollTop >= firstBlock.offsetHeight) {
+      el.scrollTop = 0;
+    }
+  }, 80);
+}
+
 function latestSubmissionsUpdater() {
   $.ajax({
     url: "{{ url_for('latest') }}",
     type: "get",
     success: function(data){
         latestSubmissionsJQ.html(data);
+        startLatestScroll();
         setTimeout(latestSubmissionsUpdater, latestSubmissionDelay);
     }, 
     global: false
@@ -211,6 +153,7 @@ function latestSubmissionUpdaterFirst() {
     type: "get",
     success: function(data){
         latestSubmissionsJQ.hide().html(data).fadeIn();
+        startLatestScroll();
         setTimeout(latestSubmissionsUpdater, latestSubmissionDelay);
     }, 
     global: false
@@ -364,7 +307,7 @@ function loadNotifications() {
         container.html('<div class="notif-item notif-empty">No announcements yet</div>');
         return;
       }
-      var html = '';
+      var html = '<div class="scroll-content">';
       for (var i = 0; i < data.length; i++) {
         var n = data[i];
         html += '<div class="notif-item">';
@@ -374,15 +317,27 @@ function loadNotifications() {
         }
         html += '</div>';
       }
+      html += '</div><div class="scroll-content scroll-clone">';
+      for (var i = 0; i < data.length; i++) {
+        var n = data[i];
+        html += '<div class="notif-item">';
+        html += '<span class="notif-title">' + (n.title || '') + '</span>';
+        if (n.content) {
+          html += '<span class="notif-text">' + n.content + '</span>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
       container.html(html);
 
-      // Auto-scroll notifications if content overflows
+      // Continuous rolling scroll for notifications
       if (notifScrollInterval) clearInterval(notifScrollInterval);
       var el = container[0];
-      if (el.scrollHeight > el.clientHeight) {
+      var firstNotifBlock = el.querySelector('.scroll-content');
+      if (firstNotifBlock && el.scrollHeight > el.clientHeight) {
         notifScrollInterval = setInterval(function() {
           el.scrollTop += 1;
-          if (el.scrollTop >= el.scrollHeight - el.clientHeight) {
+          if (el.scrollTop >= firstNotifBlock.offsetHeight) {
             el.scrollTop = 0;
           }
         }, 80);

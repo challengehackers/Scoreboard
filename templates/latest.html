@@ -1,6 +1,7 @@
 {# Formatted Data For Scoreboard #}
 
 <p class="column-header">Latest Solves</p>
+<div class="scroll-content">
 <table>
   {% for submission in data %}
   <tr>
@@ -11,3 +12,16 @@
   </tr>
   {% endfor %}
 </table>
+</div>
+<div class="scroll-content scroll-clone">
+<table>
+  {% for submission in data %}
+  <tr>
+    <td>+{{ submission.challpoints }}</td>
+    <td>{{ submission.challname }}</td>
+    <td>{{ submission.teamname }}</td>
+    <td>{{ submission.time }}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
